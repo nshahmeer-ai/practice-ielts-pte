@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>IELTS Auto-Formatter (Universal)</title>
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #F0E6FF; color: #1f1f1f; padding: 40px; display: flex; flex-direction: column; align-items: center; }
+    .container { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 600px; width: 100%; text-align: center; }
+    h1 { color: #7A00DF; margin-top: 0; }
+    select { padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; width: 100%; margin-bottom: 20px; }
+    .upload-area { border: 2px dashed #7A00DF; padding: 40px; border-radius: 12px; margin: 0 0 20px 0; background: #FAFAFA; cursor: pointer; display: block; }
+    .upload-area:hover { background: #f0e6ff; }
+    input[type="file"] { display: none; }
+    button { background: #7A00DF; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.2s; }
+    button:hover { background: #5c00a6; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    #status { margin-top: 20px; font-size: 14px; color: #555; white-space: pre-wrap; text-align: left; background: #f4f4f4; padding: 10px; border-radius: 8px; max-height: 200px; overflow-y: auto; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>IELTS Database Builder</h1>
+    <p>Select the module and upload the <b>scraped_ielts_tests.json</b> file.</p>
+    
+    <select id="module-select">
+      <option value="listening">🎧 Listening Tests</option>
+      <option value="reading">📖 Reading Tests</option>
+    </select>
+
+    <label class="upload-area" id="drop-zone">
+      <span id="file-name">Click to select the JSON file</span>
+      <input type="file" id="file-input" accept=".json" />
+    </label>
+
+    <button id="process-btn" disabled>Process & Download Database</button>
+
+    <div id="status" style="display:none;"></div>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById('file-input');
+    const fileNameSpan = document.getElementById('file-name');
+    const processBtn = document.getElementById('process-btn');
+    const statusDiv = document.getElementById('status');
+    const moduleSelect = document.getElementById('module-select');
+
+    let uploadedData = null;
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        fileNameSpan.innerHTML = `Selected: <b>${file.name}</b>`;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          try {
+            uploadedData = JSON.parse(evt.target.result);
+            processBtn.disabled = false;
+            showStatus(`Successfully loaded ${uploadedData.length} tests.`);
+          } catch(err) {
+            showStatus(`Error parsing JSON: ${err.message}`);
+          }
+        };
+        reader.readAsText(file);
+      }
+    });
+
+    processBtn.addEventListener('click', () => {
+      if (!uploadedData) return;
+      processBtn.disabled = true;
+      processBtn.innerText = "Processing...";
+      
+      const selectedModule = moduleSelect.value;
+
+      setTimeout(() => {
+        let finalJS = "";
+        let filename = "";
+
+        if (selectedModule === "listening") {
+          finalJS = generateListeningDatabaseJS(uploadedData);
+          filename = 'listening_database.js';
+        } else if (selectedModule === "reading") {
+          finalJS = generateReadingDatabaseJS(uploadedData);
+          filename = 'reading_database.js';
+        }
+
+        downloadFile(finalJS, filename);
+        
+        processBtn.innerText = "Process & Download Database";
+        processBtn.disabled = false;
+        showStatus(`Processing complete! Downloaded ${filename}.\n\nYou can move this file into your models/ folder.`);
+      }, 500);
+    });
+
+    function showStatus(msg) {
+      statusDiv.style.display = 'block';
+      statusDiv.innerText = msg;
+    }
+
+    // ─── LISTENING PARSER ──────────────────────────────────────────
+    function generateListeningDatabaseJS(rawArray) {
+      let jsCode = `/**\n * Auto-Generated Listening Database\n * Contains ${rawArray.length} Tests\n */\n\nconst ListeningModel = {\n  getIELTSTest(testNum) {\n    const tests = {\n`;
+
+      rawArray.forEach((test, index) => {
+        let testId = index + 1;
+        let match = null;
+        if (test.url) match = test.url.match(/test[-_]?(\d+)/i);
+        if (!match && test.title) match = test.title.match(/test\s*(\d+)/i);
+        if (match && match[1]) testId = parseInt(match[1]);
+        
+        const answersMap = extractAnswers(test.rawAnswers || "");
+        const questionsList = extractQuestions(test.rawContentText || "", answersMap, 40);
+        const sections = groupIntoListeningSections(questionsList);
+
+        const testObj = {
+          id: testId,
+          title: test.title || `IELTS Listening Test ${testId}`,
+          exam: 'ielts',
+          module: 'listening',
+          duration: 30,
+          audioSrc: test.audioSrc !== "NO_AUDIO" ? test.audioSrc : "",
+          audioDriveEmbed: "",
+          audioLabel: `IELTS Listening Test ${testId} — Full Audio`,
+          sections: sections
+        };
+
+        jsCode += `      ${testId}: ${JSON.stringify(testObj, null, 8).replace(/"([^"]+)":/g, '$1:')},\n`;
+      });
+
+      jsCode += `    };\n    if (!tests[testNum]) return this._generatePlaceholderTest(testNum, 'ielts');\n    return tests[testNum];\n  },\n\n`;
+      jsCode += `  _generatePlaceholderTest(testNum, exam) {\n    return { id: testNum, title: 'Test ' + testNum + ' (Placeholder)', exam, module: 'listening', sections: [] };\n  }\n};\n`;
+      return jsCode;
+    }
+
+    function groupIntoListeningSections(questionsList) {
+      const sections = [];
+      for (let i = 0; i < 4; i++) {
+        sections.push({
+          id: i + 1,
+          title: `Section ${i + 1} — Questions ${i * 10 + 1}–${(i + 1) * 10}`,
+          context: i === 0 && questionsList[0] ? questionsList[0].raw_test_text || 'See test text.' : 'Listen to the audio.',
+          questionType: 'mixed',
+          instructions: 'Answer the questions.',
+          questions: questionsList.slice(i * 10, (i + 1) * 10).map(q => { delete q.raw_test_text; return q; })
+        });
+      }
+      return sections;
+    }
+
+    // ─── READING PARSER ────────────────────────────────────────────
+    function generateReadingDatabaseJS(rawArray) {
+      let jsCode = `/**\n * Auto-Generated Reading Database\n * Contains ${rawArray.length} Tests\n */\n\nconst ReadingModel = {\n  getIELTSTest(testNum) {\n    const tests = {\n`;
+
+      rawArray.forEach((test, index) => {
+        let testId = index + 1;
+        let match = null;
+        if (test.url) match = test.url.match(/test[-_]?(\d+)/i);
+        if (!match && test.title) match = test.title.match(/test\s*(\d+)/i);
+        if (match && match[1]) testId = parseInt(match[1]);
+        
+        const answersMap = extractAnswers(test.rawAnswers || "");
+        
+        // Reading tests usually have 40 questions total, split roughly 13/13/14 across 3 passages
+        const questionsList = extractQuestions(test.rawContentText || "", answersMap, 40);
+        const passages = groupIntoReadingPassages(questionsList, test.rawContentText || "No text found.");
+
+        const testObj = {
+          id: testId,
+          title: test.title || `IELTS Academic Reading Test ${testId}`,
+          exam: 'ielts',
+          module: 'reading',
+          type: 'Academic',
+          duration: 60,
+          passages: passages
+        };
+
+        jsCode += `      ${testId}: ${JSON.stringify(testObj, null, 8).replace(/"([^"]+)":/g, '$1:')},\n`;
+      });
+
+      jsCode += `    };\n    if (!tests[testNum]) return this._generatePlaceholder(testNum, 'ielts');\n    return tests[testNum];\n  },\n\n`;
+      jsCode += `  getPTETest(testNum) { return this._generatePlaceholder(testNum, 'pte'); },\n\n`;
+      jsCode += `  _generatePlaceholder(testNum, exam) {\n    return { id: testNum, title: exam + ' Reading Test ' + testNum + ' (Placeholder)', exam, module: 'reading', passages: [] };\n  }\n};\n`;
+      return jsCode;
+    }
+
+    function groupIntoReadingPassages(questionsList, fullRawText) {
+      const passages = [];
+      
+      // Reading passages are long, we will split the massive raw text into 3 rough chunks,
+      // or just put the whole thing in passage 1 so the user doesn't lose data.
+      // Since parsing out 3 exact passages reliably is impossible without strict delimiters,
+      // we'll put the massive text in Passage 1 and just say "Passage 2" "Passage 3" for the others.
+      // The user can read all passages by scrolling in the first section.
+      
+      let startQ = 1;
+      let endQ = 13;
+
+      let parsedPassages = null;
+      try {
+          parsedPassages = JSON.parse(fullRawText);
+      } catch(e) {}
+
+      for (let i = 0; i < 3; i++) {
+        let pText = "";
+        let currentQuestions = questionsList.slice(startQ - 1, endQ);
+        
+        if (parsedPassages && Array.isArray(parsedPassages) && parsedPassages[i]) {
+            // We have structured HTML from the new scraper!
+            pText = parsedPassages[i].html;
+        } else {
+            // Fallback for old scraped JSON without structured HTML
+            pText = "**Note: This text box contains the entire reading test (all 3 passages). Simply scroll down to the passage relevant to the current questions!**\n\n---\n\n" + fullRawText;
+        }
+        
+        passages.push({
+          id: i + 1,
+          title: `Reading Passage ${i + 1}`,
+          text: pText,
+          isHtml: parsedPassages ? true : false, // Flag to tell the controller to render as raw HTML
+          questions: [
+            {
+              type: "input",
+              title: `Questions ${startQ}-${endQ}`,
+              instructions: "Answer the questions based on the passage.",
+              items: currentQuestions.map(q => { delete q.raw_test_text; return q; })
+            }
+          ]
+        });
+        startQ = endQ + 1;
+        endQ = i === 1 ? 40 : endQ + 13;
+      }
+      return passages;
+    }
+
+    // ─── UTILS ─────────────────────────────────────────────────────
+    function extractAnswers(rawAnsText) {
+      const map = {};
+      const regex = /\b(\d{1,2})\s*[\.\-\)]?\s*([A-Za-z0-9\s\,\-\']+?)(?=\s*\b\d{1,2}\s*[\.\-\)]?\s*|$)/g;
+      let match;
+      while ((match = regex.exec(rawAnsText)) !== null) {
+        let qNum = parseInt(match[1]);
+        let ans = match[2].trim();
+        map[qNum] = ans;
+      }
+      return map;
+    }
+
+    function extractQuestions(rawContentText, answersMap, maxQ) {
+      let rawText = rawContentText || "";
+      let htmlText = "";
+      
+      try {
+          let parsed = JSON.parse(rawText);
+          if (Array.isArray(parsed)) {
+             htmlText = parsed.map(p => p.html).join(' ');
+             let tempDiv = document.createElement('div');
+             tempDiv.innerHTML = htmlText;
+             rawText = tempDiv.innerText || tempDiv.textContent;
+          }
+      } catch (e) {}
+
+      const questions = [];
+      for (let i = 1; i <= maxQ; i++) {
+        let qType = 'input';
+        let ans = answersMap[i] || `[Answer ${i}]`;
+        
+        if (/^[A-E]$/i.test(ans) || /^(TRUE|FALSE|NOT GIVEN|YES|NO)$/i.test(ans)) {
+          qType = 'mcq';
+        }
+
+        let qObj = {
+          num: i,
+          text: `Question ${i}: Provide the answer.`, 
+          type: qType,
+          answer: ans
+        };
+
+        if (qType === 'mcq') {
+          qObj.options = ['A', 'B', 'C', 'D'];
+          if (/^(TRUE|FALSE|NOT GIVEN|YES|NO)$/i.test(ans)) {
+             qObj.options = ['TRUE', 'FALSE', 'NOT GIVEN'];
+             if(ans === 'YES' || ans === 'NO') qObj.options = ['YES', 'NO', 'NOT GIVEN'];
+          }
+        }
+
+        questions.push(qObj);
+      }
+      if(questions[0]) {
+         questions[0].raw_test_text = htmlText ? htmlText : rawContentText;
+         questions[0].isHtml = htmlText ? true : false;
+      }
+      return questions;
+    }
+
+    function downloadFile(content, filename) {
+      const blob = new Blob([content], { type: 'application/javascript' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>

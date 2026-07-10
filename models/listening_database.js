@@ -1,0 +1,1 @@
+window.LISTENING_DB = [];

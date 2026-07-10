@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "IELTS Master Auto-Scraper",
+  "version": "1.0",
+  "description": "Automates scraping of IELTS Listening Tests from practicepteonline.com",
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "scripting",
+    "downloads",
+    "storage"
+  ],
+  "host_permissions": [
+    "*://*.practicepteonline.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Open Scraper"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.practicepteonline.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
