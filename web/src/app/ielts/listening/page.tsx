@@ -3,7 +3,7 @@ import { client } from '../../../sanity/client'
 export const revalidate = 60 // Revalidate every 60 seconds
 
 export default async function IELTSListeningPage() {
-  const tests = await client.fetch(`*[_type == "test" && exam == "IELTS" && module == "Listening"] | order(testNumber asc)`)
+  const tests = await client.fetch(`*[_type == "test" && type == "ielts_listening"] | order(testNumber asc)`)
 
   const Icon = ({ name, cls = '' }: { name: string; cls?: string }) => (
     <span className={`material-symbols-outlined ${cls}`}>{name}</span>

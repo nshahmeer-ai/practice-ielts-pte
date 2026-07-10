@@ -26,6 +26,20 @@ export const test = {
       validation: (Rule: any) => Rule.required(),
     },
     {
+      name: 'testNumber',
+      title: 'Test Number',
+      type: 'number',
+      description: 'e.g. 1',
+    },
+    {
+      name: 'difficulty',
+      title: 'Difficulty',
+      type: 'string',
+      options: {
+        list: ['Beginner', 'Intermediate', 'Advanced']
+      }
+    },
+    {
       name: 'audioDriveEmbed',
       title: 'Google Drive Audio Embed URL',
       type: 'url',
