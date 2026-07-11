@@ -102,7 +102,7 @@ export default async function DynamicHubPage({ params }: Props) {
               {page.title.toUpperCase()}
             </span>
           </div>
-          <h1 className="hero__title">{page.heroTitle}</h1>
+          <h1 className="hero__title" style={{ margin: '0 auto 24px' }}>{page.heroTitle}</h1>
           <p className="hero__subtitle" style={{ maxWidth: '600px', margin: '0 auto 40px' }}>
             {page.heroDescription}
           </p>
