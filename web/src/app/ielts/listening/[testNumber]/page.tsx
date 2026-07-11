@@ -3,8 +3,9 @@ import ListeningExamUI from './ListeningExamUI'
 
 export const revalidate = 60
 
-export default async function IELTSListeningExamPage({ params }: { params: { testNumber: string } }) {
-  const testNumber = parseInt(params.testNumber, 10)
+export default async function IELTSListeningExamPage({ params }: { params: Promise<{ testNumber: string }> }) {
+  const resolvedParams = await params;
+  const testNumber = parseInt(resolvedParams.testNumber, 10)
   
   // Fetch the specific test from Sanity
   const test = await client.fetch(
