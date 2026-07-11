@@ -28,6 +28,7 @@ export async function createListeningTest(data: any) {
         current: slug,
       },
       duration: data.duration,
+      passageContent: data.passageContent,
       googleDriveAudioUrl: data.googleDriveAudioUrl,
       questions: data.questions.map((q: any, i: number) => ({
         ...q,

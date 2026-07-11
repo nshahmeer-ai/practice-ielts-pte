@@ -14,6 +14,7 @@ export default function CreateIeltsListening() {
   const [testData, setTestData] = useState({
     title: '',
     duration: 30,
+    passageContent: '',
     googleDriveAudioUrl: '',
     questions: [
       {
@@ -136,6 +137,21 @@ export default function CreateIeltsListening() {
                 onChange={e => setTestData({...testData, duration: parseInt(e.target.value)})}
               />
             </div>
+          </div>
+        </div>
+
+        {/* Passage Content */}
+        <div style={{ marginBottom: '32px' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: 'bold', borderBottom: '1px solid var(--admin-border)', paddingBottom: '12px', marginBottom: '24px' }}>Context / Reading Content</h2>
+          <div>
+            <label style={{ display: 'block', fontWeight: '600', marginBottom: '8px', color: '#334155' }}>Passage or Table (HTML/Text)</label>
+            <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '12px' }}>Paste text or HTML tables. To insert an inline fill-in-the-blank input for Question 1, simply type <strong>[[1]]</strong> where the blank should be. The system will automatically convert it into an interactive box.</p>
+            <textarea 
+              placeholder="E.g., Good for people who are especially keen on (1) [[1]]"
+              style={{ width: '100%', minHeight: '300px', padding: '16px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '15px', fontFamily: 'monospace' }}
+              value={testData.passageContent}
+              onChange={e => setTestData({...testData, passageContent: e.target.value})}
+            />
           </div>
         </div>
 

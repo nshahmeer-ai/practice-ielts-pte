@@ -26,9 +26,14 @@ export const ieltsListening = defineType({
     }),
     defineField({
       name: 'duration',
-      title: 'Duration (minutes)',
+      title: 'Duration (Minutes)',
       type: 'number',
-      initialValue: 30,
+    }),
+    defineField({
+      name: 'passageContent',
+      title: 'Passage / Table Content (HTML/Text with [[1]] tags)',
+      type: 'text',
+      description: 'Paste HTML tables or text here. Use [[1]], [[2]] to insert fill-in-the-blank boxes inline for the questions.',
     }),
     defineField({
       name: 'transcript',

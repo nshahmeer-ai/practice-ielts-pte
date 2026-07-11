@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { client } from '../../../../sanity/client'
 import { PortableText } from '@portabletext/react'
+import parse, { domToReact } from 'html-react-parser'
 import './interactive-test.css'
 
 export default function InteractiveListeningTest({ params }: { params: { slug: string } }) {
@@ -123,6 +124,48 @@ export default function InteractiveListeningTest({ params }: { params: { slug: s
         <h1 className="test-title">{test.title}</h1>
         <p className="test-instructions">Complete the questions below as you listen.</p>
 
+        {test.passageContent && (
+          <div className="passage-content" style={{ marginBottom: '40px', background: 'white', padding: '32px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.05)', fontSize: '16px', lineHeight: '1.6', overflowX: 'auto' }}>
+            {(() => {
+              // Replace [[X]] with custom element
+              const htmlWithTags = test.passageContent.replace(/\[\[(\d+)\]\]/g, '<inline-question data-id="$1"></inline-question>')
+              
+              const options = {
+                replace: (domNode: any) => {
+                  if (domNode.name === 'inline-question') {
+                    const qNum = parseInt(domNode.attribs['data-id'])
+                    
+                    return (
+                      <span className="inline-question-wrapper" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', margin: '0 4px' }}>
+                        <strong style={{ color: '#64748b', fontSize: '14px' }}>({qNum})</strong>
+                        <input
+                          type="text"
+                          style={{
+                            width: '150px',
+                            padding: '6px 12px',
+                            borderRadius: '4px',
+                            border: '2px solid #cbd5e1',
+                            fontSize: '15px',
+                            outline: 'none',
+                            transition: 'border-color 0.2s',
+                            boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.05)'
+                          }}
+                          className={`fill-blank-input inline-input ${submitted ? 'submitted' : ''}`}
+                          value={answers[qNum] || ''}
+                          onChange={(e) => handleAnswerChange(qNum, e.target.value)}
+                          disabled={submitted}
+                        />
+                      </span>
+                    )
+                  }
+                }
+              }
+
+              return parse(htmlWithTags, options)
+            })()}
+          </div>
+        )}
+
         <div className="questions-container">
           {test.questions?.map((q: any) => (
             <div key={q._key} className={`question-block ${submitted ? 'submitted' : ''}`}>
@@ -176,6 +219,11 @@ export default function InteractiveListeningTest({ params }: { params: { slug: s
                         </label>
                       )
                     })}
+                  </div>
+                ) : test.passageContent?.includes(`[[${q.questionNumber}]]`) ? (
+                  <div style={{ padding: '12px', background: '#f8fafc', borderRadius: '6px', color: '#64748b', fontSize: '14px', border: '1px dashed #cbd5e1' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: '16px', verticalAlign: 'middle', marginRight: '6px' }}>edit_note</span>
+                    <em>Answer this question inline in the passage above.</em>
                   </div>
                 ) : (
                   <input 
