@@ -70,30 +70,23 @@ export default function InteractiveListeningTest({ params }: { params: { slug: s
     setSubmitted(true)
     setIsPlaying(false)
     let correct = 0
-    test?.sections?.forEach((section: any) => {
-      section.questions?.forEach((q: any) => {
-        const userAns = (answers[q.questionNumber] || '').toLowerCase().trim()
-        const correctAns = (q.correctAnswer || '').toLowerCase().trim()
-        
-        if (q.questionType === 'Multiple Select') {
-          // Compare sorted arrays of selected options
-          const userArr = userAns.split(',').map((s: string) => s.trim()).filter(Boolean).sort()
-          const correctArr = correctAns.split(',').map((s: string) => s.trim()).filter(Boolean).sort()
-          if (JSON.stringify(userArr) === JSON.stringify(correctArr)) correct++
-        } else {
-          if (userAns === correctAns) correct++
-        }
-      })
+    test?.questions?.forEach((q: any) => {
+      const userAns = (answers[q.questionNumber] || '').toLowerCase().trim()
+      const correctAns = (q.correctAnswer || '').toLowerCase().trim()
+      
+      if (q.questionType === 'Multiple Select') {
+        const userArr = userAns.split(',').map((s: string) => s.trim()).filter(Boolean).sort()
+        const correctArr = correctAns.split(',').map((s: string) => s.trim()).filter(Boolean).sort()
+        if (JSON.stringify(userArr) === JSON.stringify(correctArr)) correct++
+      } else {
+        if (userAns === correctAns) correct++
+      }
     })
     setScore(correct)
   }
 
   const getTotalQuestions = () => {
-    let total = 0;
-    test?.sections?.forEach((s: any) => {
-      total += s.questions?.length || 0;
-    });
-    return total;
+    return test?.questions?.length || 0;
   }
 
   if (loading) return <div className="test-loading">Loading Test Environment...</div>
@@ -130,120 +123,112 @@ export default function InteractiveListeningTest({ params }: { params: { slug: s
         <h1 className="test-title">{test.title}</h1>
         <p className="test-instructions">Complete the questions below as you listen.</p>
 
-        <div className="sections-container">
-          {test.sections?.map((section: any, idx: number) => (
-            <div key={section._key || idx} className="test-section">
-              <h2 className="section-header">{section.sectionTitle}</h2>
-              
-              {section.googleDriveImageContext && (
-                <div className="section-image-context" style={{ marginBottom: '24px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-                  <img src={section.googleDriveImageContext.replace('/view', '/preview')} alt="Section Context" style={{ width: '100%', height: 'auto', display: 'block' }} />
+        <div className="questions-container">
+          {test.questions?.map((q: any) => (
+            <div key={q._key} className={`question-block ${submitted ? 'submitted' : ''}`}>
+              <div className="question-header">
+                <span className="q-num">{q.questionNumber}.</span>
+                <span className="q-text">{q.questionText}</span>
+              </div>
+
+              {q.googleDriveImageContext && (
+                <div className="q-image-context" style={{ marginBottom: '24px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                  <img src={q.googleDriveImageContext.replace('/view', '/preview')} alt="Question Context" style={{ width: '100%', height: 'auto', display: 'block' }} />
                 </div>
               )}
 
-              <div className="questions-container">
-                {section.questions?.map((q: any) => (
-                  <div key={q._key} className={`question-block ${submitted ? 'submitted' : ''}`}>
-                    <div className="question-header">
-                      <span className="q-num">{q.questionNumber}.</span>
-                      <span className="q-text">{q.questionText}</span>
-                    </div>
-
-                    <div className="q-input-area">
-                      {q.questionType === 'Multiple Choice' ? (
-                        <div className="options-list">
-                          {q.options?.split(',').map((opt: string) => {
-                            const optionText = opt.trim()
-                            return (
-                              <label key={optionText} className="option-label">
-                                <input 
-                                  type="radio" 
-                                  name={`q-${q.questionNumber}`}
-                                  value={optionText}
-                                  checked={answers[q.questionNumber] === optionText}
-                                  onChange={(e) => handleAnswerChange(q.questionNumber, e.target.value)}
-                                  disabled={submitted}
-                                />
-                                {optionText}
-                              </label>
-                            )
-                          })}
-                        </div>
-                      ) : q.questionType === 'Multiple Select' ? (
-                        <div className="options-list">
-                          {q.options?.split(',').map((opt: string) => {
-                            const optionText = opt.trim()
-                            const isChecked = answers[q.questionNumber]?.includes(optionText) || false
-                            return (
-                              <label key={optionText} className="option-label">
-                                <input 
-                                  type="checkbox" 
-                                  name={`q-${q.questionNumber}`}
-                                  value={optionText}
-                                  checked={isChecked}
-                                  onChange={(e) => handleCheckboxChange(q.questionNumber, optionText, e.target.checked)}
-                                  disabled={submitted}
-                                />
-                                {optionText}
-                              </label>
-                            )
-                          })}
-                        </div>
-                      ) : (
-                        <input 
-                          type="text" 
-                          className="fill-blank-input" 
-                          placeholder="Type answer..." 
-                          value={answers[q.questionNumber] || ''}
-                          onChange={(e) => handleAnswerChange(q.questionNumber, e.target.value)}
-                          disabled={submitted}
-                        />
-                      )}
-                    </div>
-
-                    {submitted && (
-                      <div className={`grading-feedback ${(() => {
-                        const userAns = (answers[q.questionNumber] || '').toLowerCase().trim()
-                        const correctAns = (q.correctAnswer || '').toLowerCase().trim()
-                        if (q.questionType === 'Multiple Select') {
-                          const userArr = userAns.split(',').map((s: string) => s.trim()).filter(Boolean).sort()
-                          const correctArr = correctAns.split(',').map((s: string) => s.trim()).filter(Boolean).sort()
-                          return JSON.stringify(userArr) === JSON.stringify(correctArr) ? 'correct' : 'incorrect'
-                        }
-                        return userAns === correctAns ? 'correct' : 'incorrect'
-                      })()}`}>
-                        <div className="status">
-                          {(() => {
-                            const userAns = (answers[q.questionNumber] || '').toLowerCase().trim()
-                            const correctAns = (q.correctAnswer || '').toLowerCase().trim()
-                            let isCorrect = false;
-                            if (q.questionType === 'Multiple Select') {
-                              const userArr = userAns.split(',').map((s: string) => s.trim()).filter(Boolean).sort()
-                              const correctArr = correctAns.split(',').map((s: string) => s.trim()).filter(Boolean).sort()
-                              isCorrect = JSON.stringify(userArr) === JSON.stringify(correctArr)
-                            } else {
-                              isCorrect = userAns === correctAns
-                            }
-                            return isCorrect ? (
-                              <><span className="material-symbols-outlined">check_circle</span> Correct</>
-                            ) : (
-                              <><span className="material-symbols-outlined">cancel</span> Incorrect</>
-                            )
-                          })()}
-                        </div>
-                        <div className="correct-answer-reveal">
-                          Correct Answer: <strong>{q.correctAnswer}</strong>
-                        </div>
-                        {q.explanation && (
-                          <div className="explanation">
-                            <strong>Explanation:</strong> {q.explanation}
-                          </div>
-                        )}
-                      </div>
-                    )}
+              <div className="q-input-area">
+                {q.questionType === 'Multiple Choice' ? (
+                  <div className="options-list">
+                    {q.options?.split(',').map((opt: string) => {
+                      const optionText = opt.trim()
+                      return (
+                        <label key={optionText} className="option-label">
+                          <input 
+                            type="radio" 
+                            name={`q-${q.questionNumber}`}
+                            value={optionText}
+                            checked={answers[q.questionNumber] === optionText}
+                            onChange={(e) => handleAnswerChange(q.questionNumber, e.target.value)}
+                            disabled={submitted}
+                          />
+                          {optionText}
+                        </label>
+                      )
+                    })}
                   </div>
-                ))}
+                ) : q.questionType === 'Multiple Select' ? (
+                  <div className="options-list">
+                    {q.options?.split(',').map((opt: string) => {
+                      const optionText = opt.trim()
+                      const isChecked = answers[q.questionNumber]?.includes(optionText) || false
+                      return (
+                        <label key={optionText} className="option-label">
+                          <input 
+                            type="checkbox" 
+                            name={`q-${q.questionNumber}`}
+                            value={optionText}
+                            checked={isChecked}
+                            onChange={(e) => handleCheckboxChange(q.questionNumber, optionText, e.target.checked)}
+                            disabled={submitted}
+                          />
+                          {optionText}
+                        </label>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <input 
+                    type="text" 
+                    className="fill-blank-input" 
+                    placeholder="Type answer..." 
+                    value={answers[q.questionNumber] || ''}
+                    onChange={(e) => handleAnswerChange(q.questionNumber, e.target.value)}
+                    disabled={submitted}
+                  />
+                )}
               </div>
+
+              {submitted && (
+                <div className={`grading-feedback ${(() => {
+                  const userAns = (answers[q.questionNumber] || '').toLowerCase().trim()
+                  const correctAns = (q.correctAnswer || '').toLowerCase().trim()
+                  if (q.questionType === 'Multiple Select') {
+                    const userArr = userAns.split(',').map((s: string) => s.trim()).filter(Boolean).sort()
+                    const correctArr = correctAns.split(',').map((s: string) => s.trim()).filter(Boolean).sort()
+                    return JSON.stringify(userArr) === JSON.stringify(correctArr) ? 'correct' : 'incorrect'
+                  }
+                  return userAns === correctAns ? 'correct' : 'incorrect'
+                })()}`}>
+                  <div className="status">
+                    {(() => {
+                      const userAns = (answers[q.questionNumber] || '').toLowerCase().trim()
+                      const correctAns = (q.correctAnswer || '').toLowerCase().trim()
+                      let isCorrect = false;
+                      if (q.questionType === 'Multiple Select') {
+                        const userArr = userAns.split(',').map((s: string) => s.trim()).filter(Boolean).sort()
+                        const correctArr = correctAns.split(',').map((s: string) => s.trim()).filter(Boolean).sort()
+                        isCorrect = JSON.stringify(userArr) === JSON.stringify(correctArr)
+                      } else {
+                        isCorrect = userAns === correctAns
+                      }
+                      return isCorrect ? (
+                        <><span className="material-symbols-outlined">check_circle</span> Correct</>
+                      ) : (
+                        <><span className="material-symbols-outlined">cancel</span> Incorrect</>
+                      )
+                    })()}
+                  </div>
+                  <div className="correct-answer-reveal">
+                    Correct Answer: <strong>{q.correctAnswer}</strong>
+                  </div>
+                  {q.explanation && (
+                    <div className="explanation">
+                      <strong>Explanation:</strong> {q.explanation}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           ))}
         </div>

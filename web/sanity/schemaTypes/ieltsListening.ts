@@ -44,69 +44,47 @@ export const ieltsListening = defineType({
       description: 'Paste the shareable Google Drive link for the audio track.',
     }),
     defineField({
-      name: 'sections',
-      title: 'Listening Sections',
+      name: 'questions',
+      title: 'Questions',
       type: 'array',
       of: [
         {
           type: 'object',
           fields: [
-            {
-              name: 'sectionTitle',
-              title: 'Section Title (e.g., Part 1: Questions 1-10)',
+            { name: 'questionNumber', title: 'Question Number (e.g., 1)', type: 'number' },
+            { name: 'questionText', title: 'Question Text', type: 'string' },
+            { 
+              name: 'googleDriveImageContext', 
+              title: 'Context Image (Google Drive URL)', 
               type: 'string',
+              description: 'Optional: Paste a Google Drive image link for Maps, Diagrams, or Tables related to this question.'
             },
-            {
-              name: 'googleDriveImageContext',
-              title: 'Context Image (Google Drive URL)',
+            { 
+              name: 'questionType', 
+              title: 'Question Type', 
+              type: 'string', 
+              options: { list: ['Multiple Choice', 'Fill in the Blank', 'Matching', 'Map Labeling', 'Multiple Select'] } 
+            },
+            { 
+              name: 'options', 
+              title: 'Options (comma separated)', 
               type: 'string',
-              description: 'Optional: Paste a Google Drive image link for Maps, Diagrams, or Tables related to this section.'
+              description: 'e.g. A, B, C (Leave blank for Fill in the Blank)'
             },
-            {
-              name: 'questions',
-              title: 'Questions for this Section',
-              type: 'array',
-              of: [
-                {
-                  type: 'object',
-                  fields: [
-                    { name: 'questionNumber', title: 'Question Number (e.g., 1)', type: 'number' },
-                    { name: 'questionText', title: 'Question Text', type: 'string' },
-                    { 
-                      name: 'questionType', 
-                      title: 'Question Type', 
-                      type: 'string', 
-                      options: { list: ['Multiple Choice', 'Fill in the Blank', 'Matching', 'Map Labeling', 'Multiple Select'] } 
-                    },
-                    { 
-                      name: 'options', 
-                      title: 'Options (comma separated)', 
-                      type: 'string',
-                      description: 'e.g. A, B, C (Leave blank for Fill in the Blank)'
-                    },
-                    { name: 'correctAnswer', title: 'Correct Answer', type: 'string' },
-                    { name: 'explanation', title: 'Explanation', type: 'text', description: 'Explain why this is the correct answer.' }
-                  ],
-                  preview: {
-                    select: {
-                      title: 'questionNumber',
-                      subtitle: 'questionType',
-                    },
-                    prepare(selection) {
-                      const { title, subtitle } = selection
-                      return {
-                        title: title ? `Question ${title}` : 'New Question',
-                        subtitle: subtitle
-                      }
-                    }
-                  }
-                }
-              ]
-            }
+            { name: 'correctAnswer', title: 'Correct Answer', type: 'string' },
+            { name: 'explanation', title: 'Explanation', type: 'text', description: 'Explain why this is the correct answer.' }
           ],
           preview: {
             select: {
-              title: 'sectionTitle',
+              title: 'questionNumber',
+              subtitle: 'questionType',
+            },
+            prepare(selection) {
+              const { title, subtitle } = selection
+              return {
+                title: title ? `Question ${title}` : 'New Question',
+                subtitle: subtitle
+              }
             }
           }
         }
