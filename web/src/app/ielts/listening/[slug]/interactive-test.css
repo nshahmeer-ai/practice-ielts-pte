@@ -1,0 +1,263 @@
+.interactive-test-layout {
+  min-height: 100vh;
+  background-color: #f8fafc;
+  padding-bottom: 60px;
+}
+
+.test-header-bar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background-color: #1e293b;
+  color: white;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.timer-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-family: monospace;
+}
+
+.audio-player-container {
+  flex: 1;
+  max-width: 600px;
+  margin-left: 24px;
+}
+
+.custom-audio {
+  width: 100%;
+  height: 40px;
+}
+
+.test-content-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.test-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.test-instructions {
+  color: #64748b;
+  font-size: 1.1rem;
+  margin-bottom: 32px;
+}
+
+.questions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.question-block {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.question-block.submitted {
+  background: #f8fafc;
+}
+
+.question-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.q-num {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #3b82f6;
+  min-width: 30px;
+}
+
+.q-text {
+  font-size: 1.1rem;
+  color: #1e293b;
+  line-height: 1.5;
+}
+
+.q-image-context {
+  margin-bottom: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+
+.q-image-context img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.q-input-area {
+  margin-top: 16px;
+}
+
+.fill-blank-input {
+  width: 100%;
+  max-width: 300px;
+  padding: 10px 14px;
+  border: 2px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.fill-blank-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.fill-blank-input:disabled {
+  background-color: #e2e8f0;
+  color: #475569;
+}
+
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.option-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.05rem;
+  color: #334155;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.option-label:hover {
+  background-color: #f1f5f9;
+}
+
+.option-label input[type="radio"],
+.option-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #3b82f6;
+}
+
+.grading-feedback {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.grading-feedback.correct {
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+}
+
+.grading-feedback.incorrect {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.grading-feedback .status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+}
+
+.correct-answer-reveal {
+  margin-bottom: 4px;
+}
+
+.explanation {
+  margin-top: 8px;
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.submit-test-btn {
+  margin-top: 40px;
+  width: 100%;
+  padding: 16px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.submit-test-btn:hover {
+  background-color: #2563eb;
+}
+
+.results-panel {
+  margin-top: 40px;
+  background-color: #1e293b;
+  color: white;
+  padding: 32px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.results-panel h2 {
+  margin: 0 0 16px 0;
+  font-size: 1.5rem;
+}
+
+.score-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.score-number {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #38bdf8;
+}
+
+.score-label {
+  font-size: 1.1rem;
+  color: #94a3b8;
+}
+
+.test-loading,
+.test-not-found {
+  min-height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #64748b;
+}

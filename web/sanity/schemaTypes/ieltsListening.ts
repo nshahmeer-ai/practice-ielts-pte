@@ -12,6 +12,13 @@ export const ieltsListening = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: 'slug',
+      title: 'URL Slug',
+      type: 'slug',
+      options: { source: 'title', maxLength: 96 },
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
       name: 'audioUrl',
       title: 'Audio File (Google Drive URL or MP3 Link)',
       type: 'string',
