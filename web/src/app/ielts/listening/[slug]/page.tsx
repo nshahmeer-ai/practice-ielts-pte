@@ -354,8 +354,8 @@ export default function InteractiveListeningTest({ params }: { params: any }) {
                     let isCorrect = false
                     
                     if (q.questionType === 'Multiple Select') {
-                      const userArr = userAns.toLowerCase().split(',').map(s => s.trim()).filter(Boolean).sort()
-                      const correctArr = correctAns.toLowerCase().split(',').map(s => s.trim()).filter(Boolean).sort()
+                      const userArr = userAns.toLowerCase().split(',').map((s: string) => s.trim()).filter(Boolean).sort()
+                      const correctArr = correctAns.toLowerCase().split(',').map((s: string) => s.trim()).filter(Boolean).sort()
                       isCorrect = JSON.stringify(userArr) === JSON.stringify(correctArr)
                     } else {
                       isCorrect = userAns.toLowerCase() === correctAns.toLowerCase()
