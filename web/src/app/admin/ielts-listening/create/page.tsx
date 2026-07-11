@@ -29,7 +29,7 @@ export default function CreateListeningTest() {
       sections: [
         ...formData.sections,
         {
-          title: \`Section \${formData.sections.length + 1}\`,
+          title: `Section ${formData.sections.length + 1}`,
           context: '',
           questions: [{ questionNumber: 1, questionText: '', questionType: 'Multiple Choice', options: '', correctAnswer: '' }]
         }

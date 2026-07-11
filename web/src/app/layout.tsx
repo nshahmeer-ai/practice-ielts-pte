@@ -21,15 +21,26 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={lexend.className}>
+      <head>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+      </head>
       <body>
         {/* Navigation Bar Header */}
         <nav className="navbar">
-          <div className="container nav-content">
-            <a href="/" className="logo">Practice<span>Hub</span></a>
-            <div className="nav-links">
-              <a href="/">Home</a>
-              <a href="/ielts">IELTS</a>
-              <a href="/pte">PTE</a>
+          <div className="navbar__inner">
+            <a href="/" className="navbar__logo">
+              <div className="navbar__logo-icon">
+                <span className="material-symbols-outlined" style={{fontSize: 'inherit'}}>school</span>
+              </div>
+              PracticeHub
+            </a>
+            <div className="navbar__nav">
+              <a href="/" className="nav-sticker active">Home</a>
+              <a href="/ielts" className="nav-sticker">IELTS</a>
+              <a href="/pte" className="nav-sticker">PTE</a>
+            </div>
+            <div className="navbar__actions">
+              <a href="/admin" className="btn btn-primary btn-sm">Admin CMS</a>
             </div>
           </div>
         </nav>
@@ -41,8 +52,30 @@ export default function RootLayout({
         
         {/* Footer */}
         <footer className="footer">
-          <div className="container">
-            <p>&copy; 2026 PracticeHub. All rights reserved.</p>
+          <div className="footer__inner">
+            <div className="footer__grid">
+              <div className="footer__brand-col">
+                <h2 className="footer__brand-title">PracticeHub</h2>
+                <p className="footer__brand-desc">Master your IELTS and PTE exams with hundreds of free practice tests. Listen to authentic audio, read passages, and instantly verify your answers.</p>
+              </div>
+              <div className="footer__links-wrapper">
+                <div>
+                  <h4 className="footer__col-title">Practice</h4>
+                  <div className="footer__links">
+                    <a href="/ielts">IELTS Academic</a>
+                    <a href="/ielts">IELTS General</a>
+                    <a href="/pte">PTE Academic</a>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="footer__col-title">Admin</h4>
+                  <div className="footer__links">
+                    <a href="/admin">Dashboard</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p style={{ textAlign: 'center', opacity: 0.5, fontSize: '0.85rem' }}>&copy; 2026 PracticeHub. All rights reserved.</p>
           </div>
         </footer>
       </body>
