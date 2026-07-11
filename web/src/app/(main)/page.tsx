@@ -108,8 +108,8 @@ export default function Home() {
             <h2>Select Your Practice Path</h2>
             <p>Choose from IELTS, PTE Academic, TOEFL iBT, OET, or the Duolingo English Test. All modules available.</p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
-            <a href="/ielts" className="category-card category-card--ielts">
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '24px', maxWidth: '1100px', margin: '0 auto' }}>
+            <a href="/ielts" className="category-card category-card--ielts" style={{ flex: '1 1 300px', maxWidth: '340px' }}>
               <div className="category-card__icon"><Icon name="school" cls="icon-xl" /></div>
               <h3 className="category-card__title">IELTS Practice</h3>
               <p className="category-card__desc">International English Language Testing System — 20+ tests per module with full audio and answers.</p>
@@ -120,7 +120,7 @@ export default function Home() {
                 <span className="skill-tag"><Icon name="mic" cls="icon-xs" /> Speaking</span>
               </div>
             </a>
-            <a href="/pte" className="category-card category-card--pte">
+            <a href="/pte" className="category-card category-card--pte" style={{ flex: '1 1 300px', maxWidth: '340px' }}>
               <div className="category-card__icon"><Icon name="work" cls="icon-xl" /></div>
               <h3 className="category-card__title">PTE Academic</h3>
               <p className="category-card__desc">Pearson Test of English — AI-scored exam with computer-based format. 15+ practice tests per section.</p>
@@ -130,7 +130,7 @@ export default function Home() {
                 <span className="skill-tag"><Icon name="headphones" cls="icon-xs" /> Listening</span>
               </div>
             </a>
-            <a href="/toefl" className="category-card category-card--toefl">
+            <a href="/toefl" className="category-card category-card--toefl" style={{ flex: '1 1 300px', maxWidth: '340px' }}>
               <div className="category-card__icon"><Icon name="language" cls="icon-xl" /></div>
               <h3 className="category-card__title">TOEFL iBT</h3>
               <p className="category-card__desc">Test of English as a Foreign Language — Practice academic English skills for university admissions.</p>
@@ -141,7 +141,7 @@ export default function Home() {
                 <span className="skill-tag"><Icon name="edit_note" cls="icon-xs" /> Writing</span>
               </div>
             </a>
-            <a href="/oet" className="category-card category-card--oet">
+            <a href="/oet" className="category-card category-card--oet" style={{ flex: '1 1 300px', maxWidth: '340px' }}>
               <div className="category-card__icon"><Icon name="public" cls="icon-xl" /></div>
               <h3 className="category-card__title">OET Practice</h3>
               <p className="category-card__desc">Occupational English Test — Healthcare-specific English language test for medical professionals.</p>
@@ -152,7 +152,7 @@ export default function Home() {
                 <span className="skill-tag"><Icon name="mic" cls="icon-xs" /> Speaking</span>
               </div>
             </a>
-            <a href="/duolingo" className="category-card category-card--duolingo">
+            <a href="/duolingo" className="category-card category-card--duolingo" style={{ flex: '1 1 300px', maxWidth: '340px' }}>
               <div className="category-card__icon"><Icon name="spellcheck" cls="icon-xl" /></div>
               <h3 className="category-card__title">Duolingo</h3>
               <p className="category-card__desc">Duolingo English Test — Fast, convenient, and affordable online English proficiency test.</p>
