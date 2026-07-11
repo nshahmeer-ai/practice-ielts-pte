@@ -13,8 +13,6 @@ export default function InteractiveListeningTest({ params }: { params: any }) {
 
   const [test, setTest] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  const [timeLeft, setTimeLeft] = useState(30 * 60) // Default 30 mins
-  const [isPlaying, setIsPlaying] = useState(false)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [submitted, setSubmitted] = useState(false)
   const [score, setScore] = useState(0)
@@ -28,7 +26,6 @@ export default function InteractiveListeningTest({ params }: { params: any }) {
         })
         if (data) {
           setTest(data)
-          if (data.duration) setTimeLeft(data.duration * 60)
         }
       } catch (err) {
         console.error("Failed to fetch test:", err)
@@ -38,27 +35,6 @@ export default function InteractiveListeningTest({ params }: { params: any }) {
     }
     fetchTest()
   }, [slug])
-
-  useEffect(() => {
-    if (!isPlaying || submitted) return
-    const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          clearInterval(timer)
-          handleSubmit()
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
-    return () => clearInterval(timer)
-  }, [isPlaying, submitted])
-
-  const formatTime = (seconds: number) => {
-    const m = Math.floor(seconds / 60).toString().padStart(2, '0')
-    const s = (seconds % 60).toString().padStart(2, '0')
-    return `${m}:${s}`
-  }
 
   const handleAnswerChange = (questionNumber: number, value: string) => {
     if (submitted) return
@@ -79,7 +55,6 @@ export default function InteractiveListeningTest({ params }: { params: any }) {
 
   const handleSubmit = () => {
     setSubmitted(true)
-    setIsPlaying(false)
     let correct = 0
     test?.questions?.forEach((q: any) => {
       const userAns = (answers[q.questionNumber] || '').toLowerCase().trim()
@@ -138,22 +113,29 @@ export default function InteractiveListeningTest({ params }: { params: any }) {
     >
       {/* Pinned Audio & Timer Bar */}
       <div className="test-header-bar">
-        <div className="timer-display">
-          <span className="material-symbols-outlined">timer</span>
-          {formatTime(timeLeft)}
-        </div>
-        <div className="audio-player-container">
-          {test.googleDriveAudioUrl || test.audioUrl ? (
+        <div style={{ flex: 1 }}></div>
+        <div className="audio-player-container" style={{ position: 'relative' }}>
+          {test.googleDriveAudioUrl ? (
+            <>
+              {/* Anti-Popout Blocker */}
+              <div style={{ position: 'absolute', top: 0, right: 0, width: '60px', height: '100%', background: '#1e293b', zIndex: 10 }}></div>
+              <iframe 
+                src={test.googleDriveAudioUrl.replace('/view', '/preview')} 
+                width="100%" 
+                height="60" 
+                allow="autoplay"
+                style={{ border: 'none', borderRadius: '8px', overflow: 'hidden' }}
+              ></iframe>
+            </>
+          ) : test.audioUrl ? (
             <audio 
               controls 
               controlsList="nodownload noplaybackrate"
-              onPlay={() => setIsPlaying(true)} 
-              onPause={() => setIsPlaying(false)}
               onEnded={handleSubmit} 
               className="custom-audio"
               onContextMenu={(e) => e.preventDefault()}
             >
-              <source src={test.googleDriveAudioUrl ? getDriveDirectUrl(test.googleDriveAudioUrl) : test.audioUrl} type="audio/mpeg" />
+              <source src={test.audioUrl} type="audio/mpeg" />
             </audio>
           ) : (
             <div>No audio provided</div>
