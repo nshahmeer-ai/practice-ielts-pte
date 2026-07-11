@@ -28,13 +28,17 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedParams = await params;
-  const page = await client.fetch<HubPageData | null>(
+  let page = await client.fetch<HubPageData | null>(
     `*[_type == "hubPage" && slug.current == $testType][0]`,
     { testType: resolvedParams.testType }
   )
 
   if (!page) {
-    return { title: 'Not Found' }
+    if (resolvedParams.testType === 'ielts') {
+      page = { heroTitle: 'Master the IELTS', heroDescription: 'Free, high-quality IELTS practice tests.' } as HubPageData
+    } else {
+      return { title: 'Not Found' }
+    }
   }
 
   return {
@@ -47,13 +51,30 @@ export default async function DynamicHubPage({ params }: Props) {
   const resolvedParams = await params;
   
   // Fetch the page data from Sanity CMS
-  const page = await client.fetch<HubPageData | null>(
+  let page = await client.fetch<HubPageData | null>(
     `*[_type == "hubPage" && slug.current == $testType][0]`,
     { testType: resolvedParams.testType }
   )
 
   if (!page) {
-    notFound()
+    if (resolvedParams.testType === 'ielts') {
+      page = {
+        title: 'IELTS Hub',
+        slug: { current: 'ielts' },
+        heroTitle: 'Master the IELTS',
+        heroDescription: 'Free, high-quality IELTS practice tests. Improve your listening, reading, writing, and speaking skills with our comprehensive materials.',
+        heroIcon: 'school',
+        themeColor: 'purple',
+        modules: [
+          { title: 'IELTS Listening', description: 'Practice listening tests with audio tracks and instant scoring.', icon: 'headphones', themeColor: 'teal', link: '/ielts/listening', status: 'Start Practising' },
+          { title: 'IELTS Reading', description: 'Academic and General training reading passages with detailed answers.', icon: 'menu_book', themeColor: 'purple', link: '/ielts/reading', status: 'Start Practising' },
+          { title: 'IELTS Writing', description: 'Task 1 and Task 2 practice with model answers and strategies.', icon: 'edit_note', themeColor: 'orange', link: '/ielts/writing', status: 'Start Practising' },
+          { title: 'IELTS Speaking', description: 'Real speaking test questions and sample responses.', icon: 'mic', themeColor: 'green', link: '/ielts/speaking', status: 'Start Practising' },
+        ]
+      }
+    } else {
+      notFound()
+    }
   }
 
   // Helper to map color names to CSS classes if needed

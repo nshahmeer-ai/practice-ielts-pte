@@ -42,25 +42,26 @@ export default function RootLayout({
               </a>
 
               {/* Desktop Navigation Stickers */}
-              <nav className="navbar__nav" role="list" style={{ justifyContent: 'center' }}>
+              <nav className="navbar__nav" role="list" style={{ flex: 1, justifyContent: 'flex-end', gap: '8px' }}>
+                <a href="/" className="nav-sticker">
+                  <span className="material-symbols-outlined">home</span> Home
+                </a>
                 <a href="/ielts" className="nav-sticker">
                   <span className="material-symbols-outlined">school</span> IELTS
                 </a>
                 <a href="/pte" className="nav-sticker">
                   <span className="material-symbols-outlined">work</span> PTE
                 </a>
-                <a href="#" className="nav-sticker">
+                <a href="/toefl" className="nav-sticker">
                   <span className="material-symbols-outlined">language</span> TOEFL
                 </a>
-                <a href="#" className="nav-sticker">
+                <a href="/oet" className="nav-sticker">
                   <span className="material-symbols-outlined">public</span> OET
                 </a>
-                <a href="#" className="nav-sticker">
+                <a href="/duolingo" className="nav-sticker">
                   <span className="material-symbols-outlined">spellcheck</span> Duolingo
                 </a>
               </nav>
-              
-              <div style={{ width: '150px' }}></div>
             </div>
           </nav>
         </div>
