@@ -60,7 +60,7 @@ ins.adsbygoogle,
 
 .hero__title {
   color: var(--color-text);
-  margin-bottom: 24px;
+  margin: 0 auto 24px;
   max-width: 900px;
   line-height: 1.15;
 }
