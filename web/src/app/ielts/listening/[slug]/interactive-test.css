@@ -2,6 +2,18 @@
   min-height: 100vh;
   background-color: #f8fafc;
   padding-bottom: 60px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.interactive-test-layout input, 
+.interactive-test-layout textarea {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 }
 
 .test-header-bar {

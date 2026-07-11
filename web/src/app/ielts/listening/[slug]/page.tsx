@@ -119,11 +119,23 @@ export default function InteractiveListeningTest({ params }: { params: any }) {
     return '0.0'
   }
 
+  const getDriveDirectUrl = (url: string) => {
+    if (!url) return '';
+    const match = url.match(/\/d\/(.*?)\//) || url.match(/id=(.*?)(&|$)/);
+    const id = match ? match[1] : null;
+    return id ? `https://drive.google.com/uc?export=download&id=${id}` : url;
+  }
+
   if (loading) return <div className="test-loading">Loading Test Environment...</div>
   if (!test) return <div className="test-not-found">Test not found</div>
 
   return (
-    <div className="interactive-test-layout">
+    <div 
+      className="interactive-test-layout"
+      onContextMenu={(e) => e.preventDefault()}
+      onCopy={(e) => e.preventDefault()}
+      onCut={(e) => e.preventDefault()}
+    >
       {/* Pinned Audio & Timer Bar */}
       <div className="test-header-bar">
         <div className="timer-display">
@@ -131,15 +143,7 @@ export default function InteractiveListeningTest({ params }: { params: any }) {
           {formatTime(timeLeft)}
         </div>
         <div className="audio-player-container">
-          {test.googleDriveAudioUrl ? (
-            <iframe 
-              src={test.googleDriveAudioUrl.replace('/view', '/preview')} 
-              width="100%" 
-              height="60" 
-              allow="autoplay"
-              onLoad={() => setIsPlaying(true)}
-            ></iframe>
-          ) : test.audioUrl ? (
+          {test.googleDriveAudioUrl || test.audioUrl ? (
             <audio 
               controls 
               controlsList="nodownload noplaybackrate"
@@ -147,8 +151,9 @@ export default function InteractiveListeningTest({ params }: { params: any }) {
               onPause={() => setIsPlaying(false)}
               onEnded={handleSubmit} 
               className="custom-audio"
+              onContextMenu={(e) => e.preventDefault()}
             >
-              <source src={test.audioUrl} type="audio/mpeg" />
+              <source src={test.googleDriveAudioUrl ? getDriveDirectUrl(test.googleDriveAudioUrl) : test.audioUrl} type="audio/mpeg" />
             </audio>
           ) : (
             <div>No audio provided</div>
@@ -212,7 +217,13 @@ export default function InteractiveListeningTest({ params }: { params: any }) {
 
               {q.googleDriveImageContext && (
                 <div className="q-image-context" style={{ marginBottom: '24px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-                  <img src={q.googleDriveImageContext.replace('/view', '/preview')} alt="Question Context" style={{ width: '100%', height: 'auto', display: 'block' }} />
+                  <img 
+                    src={getDriveDirectUrl(q.googleDriveImageContext)} 
+                    alt="Question Context" 
+                    style={{ width: '100%', height: 'auto', display: 'block', pointerEvents: 'none' }} 
+                    onDragStart={(e) => e.preventDefault()}
+                    onContextMenu={(e) => e.preventDefault()}
+                  />
                 </div>
               )}
 
