@@ -52,28 +52,28 @@ export default async function AdminDashboard() {
 
       <h2 className="section-title">Quick Actions</h2>
       <div className="quick-actions-grid">
-        <a href="/admin/ielts-listening/create" className="action-card">
+        <a href="/studio/intent/create/template=ieltsListening;type=ieltsListening" className="action-card" target="_blank" rel="noopener noreferrer">
           <div className="action-card-icon">
             <span className="material-symbols-outlined">add_circle</span>
           </div>
           <h4>Post Listening Test</h4>
           <p>Add a new IELTS Listening Test</p>
         </a>
-        <a href="/admin/ielts-reading/create" className="action-card">
+        <a href="/studio/intent/create/template=ieltsReading;type=ieltsReading" className="action-card" target="_blank" rel="noopener noreferrer">
           <div className="action-card-icon">
             <span className="material-symbols-outlined">post_add</span>
           </div>
           <h4>Post Reading Test</h4>
           <p>Add a new IELTS Reading Passage</p>
         </a>
-        <a href="/admin/ielts-writing/create" className="action-card">
+        <a href="/studio/intent/create/template=ieltsWriting;type=ieltsWriting" className="action-card" target="_blank" rel="noopener noreferrer">
           <div className="action-card-icon">
             <span className="material-symbols-outlined">draw</span>
           </div>
           <h4>Post Writing Test</h4>
           <p>Add Task 1 & Task 2 prompts</p>
         </a>
-        <a href="/admin/pte/create" className="action-card">
+        <a href="/studio/intent/create/template=pteTest;type=pteTest" className="action-card" target="_blank" rel="noopener noreferrer">
           <div className="action-card-icon">
             <span className="material-symbols-outlined">library_add</span>
           </div>

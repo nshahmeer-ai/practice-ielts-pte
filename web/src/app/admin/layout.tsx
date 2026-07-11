@@ -26,23 +26,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <span className="material-symbols-outlined">dashboard</span>
               Dashboard
             </a>
-            <a href="/admin/ielts-listening" className="admin-nav-item">
+            <a href="/studio/structure/ieltsListening" className="admin-nav-item" target="_blank" rel="noopener noreferrer">
               <span className="material-symbols-outlined">headphones</span>
               IELTS Listening
             </a>
-            <a href="/admin/ielts-reading" className="admin-nav-item">
+            <a href="/studio/structure/ieltsReading" className="admin-nav-item" target="_blank" rel="noopener noreferrer">
               <span className="material-symbols-outlined">menu_book</span>
               IELTS Reading
             </a>
-            <a href="/admin/ielts-writing" className="admin-nav-item">
+            <a href="/studio/structure/ieltsWriting" className="admin-nav-item" target="_blank" rel="noopener noreferrer">
               <span className="material-symbols-outlined">edit_note</span>
               IELTS Writing
             </a>
-            <a href="/admin/ielts-speaking" className="admin-nav-item">
+            <a href="/studio/structure/ieltsSpeaking" className="admin-nav-item" target="_blank" rel="noopener noreferrer">
               <span className="material-symbols-outlined">mic</span>
               IELTS Speaking
             </a>
-            <a href="/admin/pte" className="admin-nav-item">
+            <a href="/studio/structure/pteTest" className="admin-nav-item" target="_blank" rel="noopener noreferrer">
               <span className="material-symbols-outlined">school</span>
               PTE Academic
             </a>
