@@ -37,28 +37,51 @@ export const ieltsListening = defineType({
       description: 'Paste the shareable Google Drive link for the audio track.',
     }),
     defineField({
-      name: 'testPaperImages',
-      title: 'Test Paper Screenshots (Parts 1 to 4)',
+      name: 'questions',
+      title: 'Questions',
       type: 'array',
-      of: [{ 
-        type: 'image', 
-        options: { hotspot: true },
-        fields: [
-          {
-            name: 'caption',
-            type: 'string',
-            title: 'Caption (e.g., Part 1)',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            { name: 'questionNumber', title: 'Question Number (e.g., 1)', type: 'number' },
+            { name: 'questionText', title: 'Question Text', type: 'string' },
+            { 
+              name: 'googleDriveImageContext', 
+              title: 'Context Image (Google Drive URL)', 
+              type: 'string',
+              description: 'Optional: Paste a Google Drive image link for Maps, Diagrams, or Tables related to this question.'
+            },
+            { 
+              name: 'questionType', 
+              title: 'Question Type', 
+              type: 'string', 
+              options: { list: ['Multiple Choice', 'Fill in the Blank', 'Matching', 'Map Labeling'] } 
+            },
+            { 
+              name: 'options', 
+              title: 'Options (comma separated)', 
+              type: 'string',
+              description: 'e.g. A, B, C (Leave blank for Fill in the Blank)'
+            },
+            { name: 'correctAnswer', title: 'Correct Answer', type: 'string' },
+            { name: 'explanation', title: 'Explanation', type: 'text', description: 'Explain why this is the correct answer.' }
+          ],
+          preview: {
+            select: {
+              title: 'questionNumber',
+              subtitle: 'questionType',
+            },
+            prepare(selection) {
+              const { title, subtitle } = selection
+              return {
+                title: title ? `Question ${title}` : 'New Question',
+                subtitle: subtitle
+              }
+            }
           }
-        ]
-      }],
-      description: 'Upload screenshots of the actual test questions (Part 1, 2, 3, 4).'
-    }),
-    defineField({
-      name: 'answers',
-      title: 'Rapid Answers Entry',
-      type: 'text',
-      description: 'Paste the 40 correct answers here, ONE PER LINE. Line 1 will be Question 1, Line 40 will be Question 40.',
-      validation: (rule) => rule.required(),
+        }
+      ]
     })
   ],
 })
