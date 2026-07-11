@@ -106,9 +106,9 @@ export default function Home() {
           <div className="section-header">
             <div className="section-header__tag"><Icon name="library_books" /> Choose Your Exam</div>
             <h2>Select Your Practice Path</h2>
-            <p>Choose from IELTS Academic, IELTS General Training, or PTE Academic. All modules available.</p>
+            <p>Choose from IELTS, PTE Academic, TOEFL iBT, OET, or the Duolingo English Test. All modules available.</p>
           </div>
-          <div className="grid-2" style={{ maxWidth: '860px', margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
             <a href="/ielts" className="category-card category-card--ielts">
               <div className="category-card__icon"><Icon name="school" cls="icon-xl" /></div>
               <h3 className="category-card__title">IELTS Practice</h3>
@@ -128,6 +128,39 @@ export default function Home() {
                 <span className="skill-tag"><Icon name="mic" cls="icon-xs" /> Speaking</span>
                 <span className="skill-tag"><Icon name="menu_book" cls="icon-xs" /> Reading</span>
                 <span className="skill-tag"><Icon name="headphones" cls="icon-xs" /> Listening</span>
+              </div>
+            </a>
+            <a href="/toefl" className="category-card category-card--toefl">
+              <div className="category-card__icon"><Icon name="language" cls="icon-xl" /></div>
+              <h3 className="category-card__title">TOEFL iBT</h3>
+              <p className="category-card__desc">Test of English as a Foreign Language — Practice academic English skills for university admissions.</p>
+              <div className="category-card__skills">
+                <span className="skill-tag"><Icon name="menu_book" cls="icon-xs" /> Reading</span>
+                <span className="skill-tag"><Icon name="headphones" cls="icon-xs" /> Listening</span>
+                <span className="skill-tag"><Icon name="mic" cls="icon-xs" /> Speaking</span>
+                <span className="skill-tag"><Icon name="edit_note" cls="icon-xs" /> Writing</span>
+              </div>
+            </a>
+            <a href="/oet" className="category-card category-card--oet">
+              <div className="category-card__icon"><Icon name="public" cls="icon-xl" /></div>
+              <h3 className="category-card__title">OET Practice</h3>
+              <p className="category-card__desc">Occupational English Test — Healthcare-specific English language test for medical professionals.</p>
+              <div className="category-card__skills">
+                <span className="skill-tag"><Icon name="headphones" cls="icon-xs" /> Listening</span>
+                <span className="skill-tag"><Icon name="menu_book" cls="icon-xs" /> Reading</span>
+                <span className="skill-tag"><Icon name="edit_note" cls="icon-xs" /> Writing</span>
+                <span className="skill-tag"><Icon name="mic" cls="icon-xs" /> Speaking</span>
+              </div>
+            </a>
+            <a href="/duolingo" className="category-card category-card--duolingo">
+              <div className="category-card__icon"><Icon name="spellcheck" cls="icon-xl" /></div>
+              <h3 className="category-card__title">Duolingo</h3>
+              <p className="category-card__desc">Duolingo English Test — Fast, convenient, and affordable online English proficiency test.</p>
+              <div className="category-card__skills">
+                <span className="skill-tag"><Icon name="spellcheck" cls="icon-xs" /> Literacy</span>
+                <span className="skill-tag"><Icon name="forum" cls="icon-xs" /> Conversation</span>
+                <span className="skill-tag"><Icon name="headphones" cls="icon-xs" /> Comprehension</span>
+                <span className="skill-tag"><Icon name="mic" cls="icon-xs" /> Production</span>
               </div>
             </a>
           </div>

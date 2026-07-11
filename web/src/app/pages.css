@@ -138,6 +138,21 @@ ins.adsbygoogle,
   box-shadow: var(--shadow-teal);
 }
 .category-card--pte:hover { box-shadow: 9px 9px 0px 0px var(--color-teal); }
+.category-card--toefl {
+  --card-accent: var(--color-orange);
+  box-shadow: var(--shadow-orange);
+}
+.category-card--toefl:hover { box-shadow: 9px 9px 0px 0px var(--color-orange); }
+.category-card--oet {
+  --card-accent: var(--color-green);
+  box-shadow: var(--shadow-green);
+}
+.category-card--oet:hover { box-shadow: 9px 9px 0px 0px var(--color-green); }
+.category-card--duolingo {
+  --card-accent: #FF5E8E;
+  box-shadow: 4px 4px 0px 0px rgba(255, 94, 142, 0.2);
+}
+.category-card--duolingo:hover { box-shadow: 9px 9px 0px 0px #FF5E8E; }
 
 .category-card__icon {
   font-size: 3rem;
