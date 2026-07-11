@@ -32,7 +32,10 @@ export const ieltsWriting = defineType({
       fields: [
         { name: 'prompt', title: 'Task 1 Prompt', type: 'text' },
         { name: 'image', title: 'Task 1 Image / Graph', type: 'image', options: { hotspot: true } },
-        { name: 'sampleAnswer', title: 'Sample Answer', type: 'array', of: [{ type: 'block' }] }
+        { name: 'sampleAnswer', title: 'Sample Answer', type: 'array', of: [{ type: 'block' }] },
+        { name: 'examinerComment', title: 'Examiner Comment (Band 9 Explanation)', type: 'array', of: [{ type: 'block' }] },
+        { name: 'vocabularyHighlight', title: 'Advanced Vocabulary Highlights', type: 'array', of: [{ type: 'string' }] },
+        { name: 'rubric', title: 'Grading Rubric Criteria', type: 'array', of: [{ type: 'block' }] }
       ]
     }),
     defineField({
@@ -41,7 +44,10 @@ export const ieltsWriting = defineType({
       type: 'object',
       fields: [
         { name: 'prompt', title: 'Task 2 Prompt', type: 'text' },
-        { name: 'sampleAnswer', title: 'Sample Answer', type: 'array', of: [{ type: 'block' }] }
+        { name: 'sampleAnswer', title: 'Sample Answer', type: 'array', of: [{ type: 'block' }] },
+        { name: 'examinerComment', title: 'Examiner Comment (Band 9 Explanation)', type: 'array', of: [{ type: 'block' }] },
+        { name: 'vocabularyHighlight', title: 'Advanced Vocabulary Highlights', type: 'array', of: [{ type: 'string' }] },
+        { name: 'rubric', title: 'Grading Rubric Criteria', type: 'array', of: [{ type: 'block' }] }
       ]
     })
   ],

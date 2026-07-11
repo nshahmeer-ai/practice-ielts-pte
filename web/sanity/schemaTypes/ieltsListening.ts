@@ -24,6 +24,13 @@ export const ieltsListening = defineType({
       initialValue: 30,
     }),
     defineField({
+      name: 'transcript',
+      title: 'Full Audio Transcript',
+      type: 'array',
+      of: [{ type: 'block' }],
+      description: 'The complete transcript of the audio recording.',
+    }),
+    defineField({
       name: 'sections',
       title: 'Listening Sections',
       type: 'array',
@@ -36,7 +43,7 @@ export const ieltsListening = defineType({
               name: 'context', 
               title: 'Context / Instructions', 
               type: 'array', 
-              of: [{ type: 'block' }],
+              of: [{ type: 'block' }, { type: 'image', options: { hotspot: true } }],
               description: 'Instructions, maps, or diagrams for this section.' 
             },
             {
@@ -63,6 +70,7 @@ export const ieltsListening = defineType({
                       description: 'Leave empty for Fill in the Blank.'
                     },
                     { name: 'correctAnswer', title: 'Correct Answer', type: 'string' },
+                    { name: 'explanation', title: 'Explanation', type: 'array', of: [{ type: 'block' }], description: 'Explain why this is the correct answer.' }
                   ]
                 }
               ]

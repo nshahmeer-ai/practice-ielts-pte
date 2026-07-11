@@ -26,7 +26,9 @@ export const ieltsSpeaking = defineType({
           type: 'object',
           fields: [
             { name: 'topic', title: 'Topic', type: 'string' },
-            { name: 'questions', title: 'Questions', type: 'array', of: [{ type: 'string' }] }
+            { name: 'questions', title: 'Questions', type: 'array', of: [{ type: 'string' }] },
+            { name: 'audioSampleUrl', title: 'Band 9 Audio Sample Link', type: 'string' },
+            { name: 'idioms', title: 'Key Idioms / Vocab Used', type: 'array', of: [{ type: 'string' }] }
           ]
         }
       ]
@@ -37,7 +39,9 @@ export const ieltsSpeaking = defineType({
       type: 'object',
       fields: [
         { name: 'prompt', title: 'Cue Card Prompt', type: 'text' },
-        { name: 'bulletPoints', title: 'Bullet Points', type: 'array', of: [{ type: 'string' }] }
+        { name: 'bulletPoints', title: 'Bullet Points', type: 'array', of: [{ type: 'string' }] },
+        { name: 'audioSampleUrl', title: 'Band 9 Audio Sample Link', type: 'string' },
+        { name: 'idioms', title: 'Key Idioms / Vocab Used', type: 'array', of: [{ type: 'string' }] }
       ]
     }),
     defineField({
@@ -49,7 +53,9 @@ export const ieltsSpeaking = defineType({
           type: 'object',
           fields: [
             { name: 'topic', title: 'Discussion Topic', type: 'string' },
-            { name: 'questions', title: 'Questions', type: 'array', of: [{ type: 'string' }] }
+            { name: 'questions', title: 'Questions', type: 'array', of: [{ type: 'string' }] },
+            { name: 'audioSampleUrl', title: 'Band 9 Audio Sample Link', type: 'string' },
+            { name: 'idioms', title: 'Key Idioms / Vocab Used', type: 'array', of: [{ type: 'string' }] }
           ]
         }
       ]

@@ -38,7 +38,7 @@ export const ieltsReading = defineType({
               name: 'passageContent', 
               title: 'Passage Text Content', 
               type: 'array',
-              of: [{ type: 'block' }] 
+              of: [{ type: 'block' }, { type: 'image', options: { hotspot: true } }] 
             },
             {
               name: 'questions',
@@ -54,7 +54,7 @@ export const ieltsReading = defineType({
                       name: 'questionType', 
                       title: 'Question Type', 
                       type: 'string', 
-                      options: { list: ['Multiple Choice', 'True / False / Not Given', 'Yes / No / Not Given', 'Matching Headings', 'Matching Paragraph Information', 'Fill in the Blank'] } 
+                      options: { list: ['Multiple Choice', 'True / False / Not Given', 'Yes / No / Not Given', 'Matching Headings', 'Matching Paragraph Information', 'Fill in the Blank', 'Diagram Labeling'] } 
                     },
                     { 
                       name: 'options', 
@@ -63,6 +63,7 @@ export const ieltsReading = defineType({
                       of: [{ type: 'string' }]
                     },
                     { name: 'correctAnswer', title: 'Correct Answer', type: 'string' },
+                    { name: 'explanation', title: 'Explanation', type: 'array', of: [{ type: 'block' }], description: 'Explain why this is the correct answer.' }
                   ]
                 }
               ]
