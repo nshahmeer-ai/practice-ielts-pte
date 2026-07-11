@@ -26,7 +26,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <span className="material-symbols-outlined">dashboard</span>
               Dashboard
             </a>
-            <a href="/studio/structure/ieltsListening" className="admin-nav-item" target="_blank" rel="noopener noreferrer">
+            <a href="/admin/ielts-listening" className="admin-nav-item">
               <span className="material-symbols-outlined">headphones</span>
               IELTS Listening
             </a>

@@ -1,238 +1,264 @@
 'use client'
 
 import React, { useState } from 'react'
-import { createIELTSListeningTest } from '../../actions'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { createListeningTest } from './actions'
+import '../../admin.css'
 
-export default function CreateListeningTest() {
+export default function CreateIeltsListening() {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
-
-  const [formData, setFormData] = useState({
+  
+  const [testData, setTestData] = useState({
     title: '',
-    audioUrl: '',
     duration: 30,
-    sections: [
+    googleDriveAudioUrl: '',
+    questions: [
       {
-        title: 'Section 1 — Questions 1-10',
-        context: '',
-        questions: [
-          { questionNumber: 1, questionText: '', questionType: 'Multiple Choice', options: '', correctAnswer: '' }
-        ]
+        questionNumber: 1,
+        questionText: '',
+        questionType: 'Fill in the Blank',
+        options: '',
+        correctAnswer: '',
+        explanation: '',
+        googleDriveImageContext: ''
       }
     ]
   })
 
-  const addSection = () => {
-    setFormData({
-      ...formData,
-      sections: [
-        ...formData.sections,
+  const handleAddQuestion = () => {
+    setTestData(prev => ({
+      ...prev,
+      questions: [
+        ...prev.questions,
         {
-          title: `Section ${formData.sections.length + 1}`,
-          context: '',
-          questions: [{ questionNumber: 1, questionText: '', questionType: 'Multiple Choice', options: '', correctAnswer: '' }]
+          questionNumber: prev.questions.length + 1,
+          questionText: '',
+          questionType: 'Fill in the Blank',
+          options: '',
+          correctAnswer: '',
+          explanation: '',
+          googleDriveImageContext: ''
         }
       ]
+    }))
+  }
+
+  const handleQuestionChange = (index: number, field: string, value: any) => {
+    setTestData(prev => {
+      const newQs = [...prev.questions]
+      newQs[index] = { ...newQs[index], [field]: value }
+      return { ...prev, questions: newQs }
     })
   }
 
-  const addQuestion = (sectionIndex: number) => {
-    const newSections = [...formData.sections]
-    const lastQNum = newSections[sectionIndex].questions.length > 0 
-      ? newSections[sectionIndex].questions[newSections[sectionIndex].questions.length - 1].questionNumber 
-      : 0
-    newSections[sectionIndex].questions.push({
-      questionNumber: lastQNum + 1,
-      questionText: '',
-      questionType: 'Multiple Choice',
-      options: '',
-      correctAnswer: ''
-    })
-    setFormData({ ...formData, sections: newSections })
-  }
-
-  const handleQuestionChange = (sIndex: number, qIndex: number, field: string, value: string) => {
-    const newSections = [...formData.sections]
-    newSections[sIndex].questions[qIndex] = { ...newSections[sIndex].questions[qIndex], [field]: value }
-    setFormData({ ...formData, sections: newSections })
+  const handleRemoveQuestion = (index: number) => {
+    setTestData(prev => ({
+      ...prev,
+      questions: prev.questions.filter((_, i) => i !== index).map((q, i) => ({ ...q, questionNumber: i + 1 }))
+    }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
-    setSuccess('')
-    try {
-      await createIELTSListeningTest(formData)
-      setSuccess('Test successfully created and published!')
-      // Reset form or redirect
-    } catch (err: any) {
-      setError(err.message || 'Something went wrong')
+
+    const res = await createListeningTest(testData)
+    
+    if (res.success) {
+      router.push('/admin/ielts-listening')
+      router.refresh()
+    } else {
+      setError(res.error || 'Failed to create test')
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   return (
-    <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-      <div className="admin-top-actions">
-        <a href="/admin" className="admin-btn admin-btn-secondary" style={{ padding: '8px 16px' }}>
-          <span className="material-symbols-outlined">arrow_back</span> Cancel
-        </a>
-        <button onClick={handleSubmit} disabled={loading} className="admin-btn admin-btn-primary">
-          {loading ? 'Publishing...' : 'Publish Test'}
-        </button>
+    <div style={{ padding: '32px', maxWidth: '1000px', margin: '0 auto', fontFamily: 'system-ui, sans-serif' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+        <div>
+          <Link href="/admin/ielts-listening" style={{ color: '#64748b', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '14px', marginBottom: '8px' }}>
+            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>arrow_back</span> Back to Tests
+          </Link>
+          <h1 style={{ fontSize: '28px', fontWeight: 'bold' }}>Create Listening Test</h1>
+        </div>
       </div>
 
-      {error && <div style={{ background: '#fee2e2', color: '#b91c1c', padding: '16px', borderRadius: '8px', marginBottom: '24px' }}>{error}</div>}
-      {success && <div style={{ background: '#dcfce3', color: '#15803d', padding: '16px', borderRadius: '8px', marginBottom: '24px' }}>{success}</div>}
+      {error && (
+        <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', color: '#b91c1c', padding: '16px', borderRadius: '8px', marginBottom: '24px' }}>
+          <strong>Error:</strong> {error}
+        </div>
+      )}
 
-      <div className="admin-form-container">
-        {/* Left Column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <form onSubmit={handleSubmit} style={{ background: 'white', padding: '32px', borderRadius: '12px', border: '1px solid var(--admin-border)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.05)' }}>
+        
+        {/* Basic Info */}
+        <div style={{ marginBottom: '32px' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: 'bold', borderBottom: '1px solid var(--admin-border)', paddingBottom: '12px', marginBottom: '24px' }}>General Information</h2>
           
-          <div className="admin-form-card" style={{ padding: '0' }}>
-            <input 
-              type="text" 
-              className="form-control" 
-              placeholder="Test Posting Title..." 
-              style={{ fontSize: '2rem', fontWeight: 800, border: 'none', padding: '24px', color: 'var(--color-indigo)', borderRadius: '16px' }}
-              value={formData.title}
-              onChange={e => setFormData({ ...formData, title: e.target.value })}
-            />
-          </div>
+          <div style={{ display: 'grid', gap: '20px' }}>
+            <div>
+              <label style={{ display: 'block', fontWeight: '600', marginBottom: '8px', color: '#334155' }}>Test Title</label>
+              <input 
+                type="text" 
+                required 
+                placeholder="e.g., IELTS Listening Practice Test 1"
+                style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '16px' }}
+                value={testData.title}
+                onChange={e => setTestData({...testData, title: e.target.value})}
+              />
+            </div>
 
-          <div className="admin-form-card">
-            <div className="admin-form-title">
-              <span className="material-symbols-outlined">description</span> Test Content
+            <div>
+              <label style={{ display: 'block', fontWeight: '600', marginBottom: '8px', color: '#334155' }}>Audio Track (Google Drive URL)</label>
+              <input 
+                type="url" 
+                required 
+                placeholder="Paste the shareable Google Drive audio link"
+                style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '16px' }}
+                value={testData.googleDriveAudioUrl}
+                onChange={e => setTestData({...testData, googleDriveAudioUrl: e.target.value})}
+              />
             </div>
             
-            {formData.sections.map((section, sIndex) => (
-              <div key={sIndex} className="admin-dynamic-list">
-                <div className="admin-dynamic-list-header">
-                  <span>{section.title}</span>
+            <div>
+              <label style={{ display: 'block', fontWeight: '600', marginBottom: '8px', color: '#334155' }}>Duration (minutes)</label>
+              <input 
+                type="number" 
+                required 
+                min="1"
+                style={{ width: '200px', padding: '12px 16px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '16px' }}
+                value={testData.duration}
+                onChange={e => setTestData({...testData, duration: parseInt(e.target.value)})}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Questions Array */}
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--admin-border)', paddingBottom: '12px', marginBottom: '24px' }}>
+            <h2 style={{ fontSize: '18px', fontWeight: 'bold' }}>Questions</h2>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            {testData.questions.map((q, index) => (
+              <div key={index} style={{ background: '#f8fafc', padding: '24px', borderRadius: '12px', border: '1px solid #e2e8f0', position: 'relative' }}>
+                <div style={{ position: 'absolute', top: '16px', right: '16px' }}>
+                  <button type="button" onClick={() => handleRemoveQuestion(index)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>delete</span>
+                  </button>
                 </div>
                 
-                <div className="form-group">
-                  <label>Section Context / Instructions</label>
-                  <textarea 
-                    className="form-control" 
-                    placeholder="Enter transcript, map details, or instructions..."
-                    value={section.context}
-                    onChange={e => {
-                      const newSections = [...formData.sections]
-                      newSections[sIndex].context = e.target.value
-                      setFormData({ ...formData, sections: newSections })
-                    }}
-                  />
-                </div>
+                <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '16px', color: '#0f172a' }}>Question {q.questionNumber}</h3>
 
-                <div style={{ marginTop: '24px' }}>
-                  <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-indigo)', textTransform: 'uppercase', marginBottom: '12px', display: 'block' }}>Questions</label>
-                  {section.questions.map((q, qIndex) => (
-                    <div key={qIndex} style={{ display: 'flex', gap: '16px', marginBottom: '16px', alignItems: 'flex-start' }}>
+                <div style={{ display: 'grid', gap: '16px' }}>
+                  
+                  {/* Context Image */}
+                  <div>
+                    <label style={{ display: 'block', fontWeight: '500', marginBottom: '6px', fontSize: '14px', color: '#475569' }}>Context Image (Google Drive URL) - Optional</label>
+                    <input 
+                      type="url" 
+                      placeholder="Map or Diagram Link for this question"
+                      style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px' }}
+                      value={q.googleDriveImageContext}
+                      onChange={e => handleQuestionChange(index, 'googleDriveImageContext', e.target.value)}
+                    />
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '16px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontWeight: '500', marginBottom: '6px', fontSize: '14px', color: '#475569' }}>Question Text</label>
                       <input 
-                        type="number" 
-                        className="form-control" 
-                        style={{ width: '80px' }} 
-                        placeholder="Q#" 
-                        value={q.questionNumber}
-                        onChange={e => handleQuestionChange(sIndex, qIndex, 'questionNumber', e.target.value)}
+                        type="text" 
+                        required 
+                        style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px' }}
+                        value={q.questionText}
+                        onChange={e => handleQuestionChange(index, 'questionText', e.target.value)}
                       />
-                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        <input 
-                          type="text" 
-                          className="form-control" 
-                          placeholder="Question Text" 
-                          value={q.questionText}
-                          onChange={e => handleQuestionChange(sIndex, qIndex, 'questionText', e.target.value)}
-                        />
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <select className="form-control" style={{ width: '180px' }} value={q.questionType} onChange={e => handleQuestionChange(sIndex, qIndex, 'questionType', e.target.value)}>
-                            <option>Multiple Choice</option>
-                            <option>Fill in the Blank</option>
-                            <option>Matching</option>
-                          </select>
-                          <input 
-                            type="text" 
-                            className="form-control" 
-                            placeholder="Options (comma separated)" 
-                            value={q.options}
-                            onChange={e => handleQuestionChange(sIndex, qIndex, 'options', e.target.value)}
-                          />
-                        </div>
-                        <input 
-                          type="text" 
-                          className="form-control" 
-                          placeholder="Correct Answer" 
-                          style={{ border: '1px solid var(--color-teal)' }}
-                          value={q.correctAnswer}
-                          onChange={e => handleQuestionChange(sIndex, qIndex, 'correctAnswer', e.target.value)}
-                        />
-                      </div>
                     </div>
-                  ))}
-                  <button type="button" onClick={() => addQuestion(sIndex)} className="admin-btn admin-btn-secondary" style={{ padding: '6px 12px', fontSize: '0.85rem' }}>
-                    + Add Question
-                  </button>
+                    <div>
+                      <label style={{ display: 'block', fontWeight: '500', marginBottom: '6px', fontSize: '14px', color: '#475569' }}>Question Type</label>
+                      <select 
+                        style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px', background: 'white' }}
+                        value={q.questionType}
+                        onChange={e => handleQuestionChange(index, 'questionType', e.target.value)}
+                      >
+                        <option value="Fill in the Blank">Fill in the Blank</option>
+                        <option value="Multiple Choice">Multiple Choice</option>
+                        <option value="Matching">Matching</option>
+                        <option value="Map Labeling">Map Labeling</option>
+                        <option value="Multiple Select">Multiple Select</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {(q.questionType === 'Multiple Choice' || q.questionType === 'Multiple Select') && (
+                    <div>
+                      <label style={{ display: 'block', fontWeight: '500', marginBottom: '6px', fontSize: '14px', color: '#475569' }}>Options (Comma Separated)</label>
+                      <input 
+                        type="text" 
+                        placeholder="e.g., A, B, C, D"
+                        style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px' }}
+                        value={q.options}
+                        onChange={e => handleQuestionChange(index, 'options', e.target.value)}
+                      />
+                    </div>
+                  )}
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontWeight: '500', marginBottom: '6px', fontSize: '14px', color: '#475569' }}>Correct Answer</label>
+                      <input 
+                        type="text" 
+                        required 
+                        style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px', borderLeft: '3px solid #22c55e' }}
+                        value={q.correctAnswer}
+                        onChange={e => handleQuestionChange(index, 'correctAnswer', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontWeight: '500', marginBottom: '6px', fontSize: '14px', color: '#475569' }}>Explanation (Optional)</label>
+                      <input 
+                        type="text" 
+                        style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px' }}
+                        value={q.explanation}
+                        onChange={e => handleQuestionChange(index, 'explanation', e.target.value)}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
-
-            <button type="button" onClick={addSection} className="admin-btn admin-btn-secondary" style={{ width: '100%', justifyContent: 'center' }}>
-              + Add Another Section
-            </button>
           </div>
 
+          <button 
+            type="button" 
+            onClick={handleAddQuestion}
+            style={{ marginTop: '24px', width: '100%', padding: '16px', background: '#f1f5f9', border: '2px dashed #cbd5e1', borderRadius: '12px', color: '#475569', fontWeight: '600', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', fontSize: '16px' }}
+          >
+            <span className="material-symbols-outlined">add_circle</span>
+            Add Question
+          </button>
         </div>
 
-        {/* Right Column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          
-          <div className="admin-form-card">
-            <div className="admin-form-title">
-              <span className="material-symbols-outlined">settings</span> Test Settings
-            </div>
-            
-            <div className="form-group">
-              <label>Duration (Minutes)</label>
-              <input 
-                type="number" 
-                className="form-control" 
-                value={formData.duration}
-                onChange={e => setFormData({ ...formData, duration: parseInt(e.target.value) })}
-              />
-            </div>
-            
-            <div className="form-group">
-              <label>Difficulty</label>
-              <select className="form-control">
-                <option>Academic</option>
-                <option>General Training</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="admin-form-card">
-            <div className="admin-form-title">
-              <span className="material-symbols-outlined">perm_media</span> Media & Links
-            </div>
-            
-            <div className="form-group">
-              <label>Audio File URL</label>
-              <input 
-                type="text" 
-                className="form-control" 
-                placeholder="Google Drive link or MP3..." 
-                value={formData.audioUrl}
-                onChange={e => setFormData({ ...formData, audioUrl: e.target.value })}
-              />
-              <p style={{ fontSize: '0.75rem', color: '#9ca3af', marginTop: '8px' }}>Paste direct audio link for the listening test player.</p>
-            </div>
-          </div>
-
+        <div style={{ marginTop: '48px', paddingTop: '24px', borderTop: '1px solid var(--admin-border)', display: 'flex', justifyContent: 'flex-end', gap: '16px' }}>
+          <Link href="/admin/ielts-listening" style={{ padding: '14px 24px', borderRadius: '8px', border: '1px solid #cbd5e1', color: '#475569', textDecoration: 'none', fontWeight: '600' }}>
+            Cancel
+          </Link>
+          <button 
+            type="submit" 
+            disabled={loading}
+            style={{ padding: '14px 32px', borderRadius: '8px', background: '#2563eb', color: 'white', border: 'none', fontWeight: '600', fontSize: '16px', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}
+          >
+            {loading ? 'Publishing...' : 'Publish Test'}
+          </button>
         </div>
-      </div>
+      </form>
     </div>
   )
 }
