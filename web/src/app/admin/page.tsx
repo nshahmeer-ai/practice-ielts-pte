@@ -52,7 +52,7 @@ export default async function AdminDashboard() {
 
       <h2 className="section-title">Quick Actions</h2>
       <div className="quick-actions-grid">
-        <a href="/studio/intent/create/template=ieltsListening;type=ieltsListening" className="action-card" target="_blank" rel="noopener noreferrer">
+        <a href="/admin/ielts-listening/create" className="action-card">
           <div className="action-card-icon">
             <span className="material-symbols-outlined">add_circle</span>
           </div>
