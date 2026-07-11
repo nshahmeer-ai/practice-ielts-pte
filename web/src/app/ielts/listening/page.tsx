@@ -4,7 +4,7 @@ import TestTabs from '../../../components/TestTabs'
 export const revalidate = 60 // Revalidate every 60 seconds
 
 export default async function IELTSListeningPage() {
-  const tests = await client.fetch(`*[_type == "test" && type == "ielts_listening"] | order(testNumber asc)`)
+  const tests = await client.fetch(`*[_type == "ieltsListening"] | order(_createdAt desc)`)
 
   const Icon = ({ name, cls = '' }: { name: string; cls?: string }) => (
     <span className={`material-symbols-outlined ${cls}`}>{name}</span>
@@ -59,20 +59,19 @@ export default async function IELTSListeningPage() {
             {tests.length === 0 && (
               <p>No tests available yet. Add some in the CMS!</p>
             )}
-            {tests.map((test: any) => (
-              <a href={`/ielts/listening/${test.testNumber}`} key={test._id} className="test-card">
+            {tests.map((test: any, index: number) => (
+              <a href={`/ielts/listening/${test.slug?.current}`} key={test._id} className="test-card">
                 <div className="test-card__left">
-                  <div className="test-card__num">{test.testNumber}</div>
+                  <div className="test-card__num">{index + 1}</div>
                   <div className="test-card__info">
                     <h4>{test.title}</h4>
                     <p>
-                      <span className="material-symbols-outlined" style={{ fontSize: '0.85rem', verticalAlign: 'middle' }}>timer</span> 30 min &nbsp;·&nbsp;
-                      <span className="material-symbols-outlined" style={{ fontSize: '0.85rem', verticalAlign: 'middle' }}>assignment</span> 40 questions
+                      <span className="material-symbols-outlined" style={{ fontSize: '0.85rem', verticalAlign: 'middle' }}>timer</span> {test.duration || 30} min &nbsp;·&nbsp;
+                      <span className="material-symbols-outlined" style={{ fontSize: '0.85rem', verticalAlign: 'middle' }}>assignment</span> {test.questions?.length || 0} questions
                     </p>
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span className={`badge badge-${test.difficulty === 'Beginner' ? 'green' : test.difficulty === 'Intermediate' ? 'orange' : 'red'}`} style={{ fontSize: '0.7rem' }}>{test.difficulty}</span>
                   <span className="test-card__arrow material-symbols-outlined">arrow_forward</span>
                 </div>
               </a>
