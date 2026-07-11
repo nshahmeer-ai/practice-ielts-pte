@@ -57,8 +57,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   <div style={{ fontSize: '0.75rem', color: 'var(--admin-text-muted)' }}>Super Admin</div>
                 </div>
               </div>
-              <a href="/" className="admin-btn admin-btn-secondary" style={{ width: '100%', justifyContent: 'center' }}>
+              <a href="/" className="admin-btn admin-btn-secondary" style={{ width: '100%', justifyContent: 'center', marginBottom: '8px' }}>
                 <span className="material-symbols-outlined">open_in_new</span> Go to Site
+              </a>
+              <a href="/admin/logout" className="admin-btn" style={{ width: '100%', justifyContent: 'center', background: '#fee2e2', color: '#b91c1c', border: 'none' }}>
+                <span className="material-symbols-outlined">logout</span> Logout
               </a>
             </div>
           </nav>
