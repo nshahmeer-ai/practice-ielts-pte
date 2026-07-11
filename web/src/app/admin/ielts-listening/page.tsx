@@ -57,9 +57,29 @@ export default function IeltsListeningAdmin() {
                   <td style={{ padding: '16px 24px', color: '#64748b' }}>{test.questions?.length || 0} Questions</td>
                   <td style={{ padding: '16px 24px', color: '#64748b' }}>{test.duration} mins</td>
                   <td style={{ padding: '16px 24px' }}>
-                    <Link href={`/ielts/listening/${test.slug?.current}`} target="_blank" className="admin-btn admin-btn-secondary" style={{ padding: '6px 12px', fontSize: '14px' }}>
-                      Preview
-                    </Link>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <Link href={`/ielts/listening/${test.slug?.current}`} target="_blank" className="admin-btn admin-btn-secondary" style={{ padding: '6px 12px', fontSize: '14px' }}>
+                        Preview
+                      </Link>
+                      <Link href={`/admin/ielts-listening/${test._id}/edit`} className="admin-btn" style={{ padding: '6px 12px', fontSize: '14px', background: '#f1f5f9', color: '#3b82f6', border: '1px solid #bfdbfe' }}>
+                        Edit
+                      </Link>
+                      <button 
+                        onClick={async () => {
+                          if (confirm('Are you sure you want to permanently delete this test?')) {
+                            setLoading(true)
+                            const { deleteListeningTest } = await import('./create/actions')
+                            await deleteListeningTest(test._id)
+                            setTests(tests.filter(t => t._id !== test._id))
+                            setLoading(false)
+                          }
+                        }}
+                        className="admin-btn admin-btn-danger" 
+                        style={{ padding: '6px 12px', fontSize: '14px', background: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5' }}
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

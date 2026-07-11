@@ -1,13 +1,18 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { createListeningTest } from './actions'
-import '../../admin.css'
+import { updateListeningTest } from '../../create/actions'
+import { client } from '../../../../../sanity/client'
+import '../../../admin.css'
 
-export default function CreateIeltsListening() {
+export default function EditIeltsListening({ params }: { params: any }) {
   const router = useRouter()
+  const resolvedParams = params instanceof Promise ? React.use(params) : params;
+  const id = resolvedParams?.id;
+
+  const [loadingData, setLoadingData] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   
@@ -16,18 +21,32 @@ export default function CreateIeltsListening() {
     duration: 30,
     passageContent: '',
     googleDriveAudioUrl: '',
-    questions: [
-      {
-        questionNumber: 1,
-        questionText: '',
-        questionType: 'Fill in the Blank',
-        options: '',
-        correctAnswer: '',
-        explanation: '',
-        googleDriveImageContext: ''
-      }
-    ]
+    questions: [] as any[]
   })
+
+  useEffect(() => {
+    async function fetchTest() {
+      if (!id) return;
+      try {
+        const data = await client.fetch(`*[_type == "ieltsListening" && _id == $id][0]`, { id })
+        if (data) {
+          setTestData({
+            title: data.title || '',
+            duration: data.duration || 30,
+            passageContent: data.passageContent || '',
+            googleDriveAudioUrl: data.googleDriveAudioUrl || '',
+            questions: data.questions || []
+          })
+        }
+      } catch (err) {
+        console.error("Failed to fetch test", err)
+        setError("Failed to load existing test data")
+      } finally {
+        setLoadingData(false)
+      }
+    }
+    fetchTest()
+  }, [id])
 
   const handleAddQuestion = () => {
     setTestData(prev => ({
@@ -68,14 +87,14 @@ export default function CreateIeltsListening() {
     setError('')
 
     try {
-      const res = await createListeningTest(testData)
+      const res = await updateListeningTest(id, testData)
       
       if (res.success) {
         setLoading(false)
         router.push('/admin/ielts-listening')
         router.refresh()
       } else {
-        setError(res.error || 'Failed to create test')
+        setError(res.error || 'Failed to update test')
         setLoading(false)
       }
     } catch (err: any) {
@@ -84,6 +103,8 @@ export default function CreateIeltsListening() {
     }
   }
 
+  if (loadingData) return <div style={{ padding: '48px', textAlign: 'center', color: '#64748b' }}>Loading test data...</div>
+
   return (
     <div style={{ padding: '32px', maxWidth: '1000px', margin: '0 auto', fontFamily: 'system-ui, sans-serif' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
@@ -91,7 +112,7 @@ export default function CreateIeltsListening() {
           <Link href="/admin/ielts-listening" style={{ color: '#64748b', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '14px', marginBottom: '8px' }}>
             <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>arrow_back</span> Back to Tests
           </Link>
-          <h1 style={{ fontSize: '28px', fontWeight: 'bold' }}>Create Listening Test</h1>
+          <h1 style={{ fontSize: '28px', fontWeight: 'bold' }}>Edit Listening Test</h1>
         </div>
       </div>
 
@@ -156,6 +177,7 @@ export default function CreateIeltsListening() {
               contentEditable
               onBlur={(e) => setTestData({...testData, passageContent: e.currentTarget.innerHTML})}
               suppressContentEditableWarning={true}
+              dangerouslySetInnerHTML={{ __html: testData.passageContent }}
               style={{ 
                 width: '100%', 
                 minHeight: '300px', 
@@ -187,7 +209,7 @@ export default function CreateIeltsListening() {
                   </button>
                 </div>
                 
-                <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '16px', color: '#0f172a' }}>Question {q.questionNumber}</h3>
+                <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '16px', color: '#0f172a' }}>Question {q.questionNumber || index + 1}</h3>
 
                 <div style={{ display: 'grid', gap: '16px' }}>
                   
@@ -198,7 +220,7 @@ export default function CreateIeltsListening() {
                       type="url" 
                       placeholder="Map or Diagram Link for this question"
                       style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px' }}
-                      value={q.googleDriveImageContext}
+                      value={q.googleDriveImageContext || ''}
                       onChange={e => handleQuestionChange(index, 'googleDriveImageContext', e.target.value)}
                     />
                   </div>
@@ -210,7 +232,7 @@ export default function CreateIeltsListening() {
                         type="text" 
                         required 
                         style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px' }}
-                        value={q.questionText}
+                        value={q.questionText || ''}
                         onChange={e => handleQuestionChange(index, 'questionText', e.target.value)}
                       />
                     </div>
@@ -218,7 +240,7 @@ export default function CreateIeltsListening() {
                       <label style={{ display: 'block', fontWeight: '500', marginBottom: '6px', fontSize: '14px', color: '#475569' }}>Question Type</label>
                       <select 
                         style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px', background: 'white' }}
-                        value={q.questionType}
+                        value={q.questionType || 'Fill in the Blank'}
                         onChange={e => handleQuestionChange(index, 'questionType', e.target.value)}
                       >
                         <option value="Fill in the Blank">Fill in the Blank</option>
@@ -237,7 +259,7 @@ export default function CreateIeltsListening() {
                         type="text" 
                         placeholder="e.g., A, B, C, D"
                         style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px' }}
-                        value={q.options}
+                        value={q.options || ''}
                         onChange={e => handleQuestionChange(index, 'options', e.target.value)}
                       />
                     </div>
@@ -250,7 +272,7 @@ export default function CreateIeltsListening() {
                         type="text" 
                         required 
                         style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px', borderLeft: '3px solid #22c55e' }}
-                        value={q.correctAnswer}
+                        value={q.correctAnswer || ''}
                         onChange={e => handleQuestionChange(index, 'correctAnswer', e.target.value)}
                       />
                     </div>
@@ -259,7 +281,7 @@ export default function CreateIeltsListening() {
                       <input 
                         type="text" 
                         style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px' }}
-                        value={q.explanation}
+                        value={q.explanation || ''}
                         onChange={e => handleQuestionChange(index, 'explanation', e.target.value)}
                       />
                     </div>
@@ -288,7 +310,7 @@ export default function CreateIeltsListening() {
             disabled={loading}
             style={{ padding: '14px 32px', borderRadius: '8px', background: '#2563eb', color: 'white', border: 'none', fontWeight: '600', fontSize: '16px', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}
           >
-            {loading ? 'Publishing...' : 'Publish Test'}
+            {loading ? 'Updating...' : 'Save Changes'}
           </button>
         </div>
       </form>

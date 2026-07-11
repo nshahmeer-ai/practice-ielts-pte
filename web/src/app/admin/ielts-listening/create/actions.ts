@@ -17,29 +17,69 @@ export async function createListeningTest(data: any) {
   }
 
   try {
-    // Generate a unique slug from the title
-    const slug = data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
-
     const doc = {
       _type: 'ieltsListening',
       title: data.title,
       slug: {
         _type: 'slug',
-        current: slug,
+        current: data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
       },
       duration: data.duration,
       passageContent: data.passageContent,
-      googleDriveAudioUrl: data.googleDriveAudioUrl,
-      questions: data.questions.map((q: any, i: number) => ({
-        ...q,
-        _key: `q-${Date.now()}-${i}`,
+      transcript: data.transcript,
+      questions: data.questions.map((q: any) => ({
+        _key: crypto.randomUUID(),
+        questionText: q.questionText,
+        questionType: q.questionType,
+        correctAnswer: q.correctAnswer,
+        options: q.options || [],
+        explanation: q.explanation || ''
       }))
     }
 
     const result = await writeClient.create(doc)
     return { success: true, id: result._id }
-  } catch (error: any) {
-    console.error('Error creating document:', error)
-    return { success: false, error: error.message }
+  } catch (error) {
+    console.error('Failed to create listening test:', error)
+    return { success: false, error: 'Failed to create test' }
+  }
+}
+
+export async function deleteListeningTest(id: string) {
+  try {
+    await writeClient.delete(id)
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to delete listening test:', error)
+    return { success: false, error: 'Failed to delete test' }
+  }
+}
+
+export async function updateListeningTest(id: string, data: any) {
+  try {
+    const doc = {
+      title: data.title,
+      slug: {
+        _type: 'slug',
+        current: data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
+      },
+      duration: data.duration,
+      passageContent: data.passageContent,
+      transcript: data.transcript,
+      questions: data.questions.map((q: any) => ({
+        _key: q._key || crypto.randomUUID(),
+        questionText: q.questionText,
+        questionType: q.questionType,
+        correctAnswer: q.correctAnswer,
+        options: q.options || [],
+        explanation: q.explanation || ''
+      }))
+    }
+
+    await writeClient.patch(id).set(doc).commit()
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to update listening test:', error)
+    return { success: false, error: 'Failed to update test' }
   }
 }
