@@ -81,6 +81,24 @@ export default function EditIeltsListening({ params }: { params: any }) {
     }))
   }
 
+  const handlePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault()
+    let html = e.clipboardData.getData('text/html')
+    if (html) {
+      // Sanitize pasted content to prevent copyright/style carry-over
+      html = html.replace(/class="[^"]*"/gi, '')
+      html = html.replace(/style="[^"]*"/gi, '')
+      html = html.replace(/id="[^"]*"/gi, '')
+      html = html.replace(/bgcolor="[^"]*"/gi, '')
+      html = html.replace(/color="[^"]*"/gi, '')
+      html = html.replace(/face="[^"]*"/gi, '')
+      document.execCommand('insertHTML', false, html)
+    } else {
+      const text = e.clipboardData.getData('text/plain')
+      document.execCommand('insertText', false, text)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -176,6 +194,7 @@ export default function EditIeltsListening({ params }: { params: any }) {
             <div 
               contentEditable
               onBlur={(e) => setTestData({...testData, passageContent: e.currentTarget.innerHTML})}
+              onPaste={handlePaste}
               suppressContentEditableWarning={true}
               dangerouslySetInnerHTML={{ __html: testData.passageContent }}
               style={{ 
