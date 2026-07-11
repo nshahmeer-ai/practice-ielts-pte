@@ -31,53 +31,34 @@ export const ieltsListening = defineType({
       description: 'The complete transcript of the audio recording.',
     }),
     defineField({
-      name: 'sections',
-      title: 'Listening Sections',
+      name: 'googleDriveAudioUrl',
+      title: 'Google Drive Audio URL',
+      type: 'string',
+      description: 'Paste the shareable Google Drive link for the audio track.',
+    }),
+    defineField({
+      name: 'testPaperImages',
+      title: 'Test Paper Screenshots (Parts 1 to 4)',
       type: 'array',
-      of: [
-        {
-          type: 'object',
-          fields: [
-            { name: 'sectionTitle', title: 'Section Title (e.g., Section 1 — Questions 1-10)', type: 'string' },
-            { 
-              name: 'context', 
-              title: 'Context / Instructions', 
-              type: 'array', 
-              of: [{ type: 'block' }, { type: 'image', options: { hotspot: true } }],
-              description: 'Instructions, maps, or diagrams for this section.' 
-            },
-            {
-              name: 'questions',
-              title: 'Questions',
-              type: 'array',
-              of: [
-                {
-                  type: 'object',
-                  fields: [
-                    { name: 'questionNumber', title: 'Question Number', type: 'number' },
-                    { name: 'questionText', title: 'Question Text', type: 'string' },
-                    { 
-                      name: 'questionType', 
-                      title: 'Question Type', 
-                      type: 'string', 
-                      options: { list: ['Multiple Choice', 'Fill in the Blank', 'Matching', 'Map Labeling'] } 
-                    },
-                    { 
-                      name: 'options', 
-                      title: 'Options (for Multiple Choice / Matching)', 
-                      type: 'array', 
-                      of: [{ type: 'string' }],
-                      description: 'Leave empty for Fill in the Blank.'
-                    },
-                    { name: 'correctAnswer', title: 'Correct Answer', type: 'string' },
-                    { name: 'explanation', title: 'Explanation', type: 'array', of: [{ type: 'block' }], description: 'Explain why this is the correct answer.' }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
+      of: [{ 
+        type: 'image', 
+        options: { hotspot: true },
+        fields: [
+          {
+            name: 'caption',
+            type: 'string',
+            title: 'Caption (e.g., Part 1)',
+          }
+        ]
+      }],
+      description: 'Upload screenshots of the actual test questions (Part 1, 2, 3, 4).'
+    }),
+    defineField({
+      name: 'answers',
+      title: 'Rapid Answers Entry',
+      type: 'text',
+      description: 'Paste the 40 correct answers here, ONE PER LINE. Line 1 will be Question 1, Line 40 will be Question 40.',
+      validation: (rule) => rule.required(),
     })
   ],
 })
