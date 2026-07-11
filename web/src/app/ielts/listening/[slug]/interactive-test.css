@@ -41,9 +41,9 @@
 }
 
 .test-content-container {
-  max-width: 800px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 32px 24px;
+  padding: 32px 48px;
 }
 
 .test-title {
@@ -264,16 +264,26 @@
 
 /* Table styles for passage content */
 .passage-content table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 20px 0;
+  width: 100% !important;
+  max-width: 100% !important;
+  border-collapse: collapse !important;
+  margin: 20px 0 !important;
 }
 .passage-content th, .passage-content td {
-  border: 1px solid #cbd5e1;
-  padding: 12px;
-  text-align: left;
+  border: 1px solid #cbd5e1 !important;
+  padding: 12px 16px !important;
+  text-align: left !important;
+  vertical-align: top !important;
+  height: auto !important;
+  line-height: 1.6 !important;
+}
+.passage-content tr {
+  height: auto !important;
 }
 .passage-content th {
-  background-color: #f1f5f9;
-  font-weight: bold;
+  background-color: #f1f5f9 !important;
+  font-weight: bold !important;
+}
+.passage-content p {
+  margin: 0 0 12px 0 !important;
 }
