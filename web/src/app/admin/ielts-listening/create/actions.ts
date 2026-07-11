@@ -13,7 +13,7 @@ const writeClient = createClient({
 
 export async function createListeningTest(data: any) {
   if (!process.env.SANITY_API_TOKEN) {
-    throw new Error('SANITY_API_TOKEN is not configured in your environment variables. Please create an API token in Sanity Manage and add it.')
+    return { success: false, error: 'SANITY_API_TOKEN is not configured in your environment variables. Please create an API token in Sanity Manage and add it to your Vercel project.' }
   }
 
   try {

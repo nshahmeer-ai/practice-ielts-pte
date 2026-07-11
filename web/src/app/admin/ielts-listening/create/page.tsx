@@ -67,13 +67,18 @@ export default function CreateIeltsListening() {
     setLoading(true)
     setError('')
 
-    const res = await createListeningTest(testData)
-    
-    if (res.success) {
-      router.push('/admin/ielts-listening')
-      router.refresh()
-    } else {
-      setError(res.error || 'Failed to create test')
+    try {
+      const res = await createListeningTest(testData)
+      
+      if (res.success) {
+        router.push('/admin/ielts-listening')
+        router.refresh()
+      } else {
+        setError(res.error || 'Failed to create test')
+        setLoading(false)
+      }
+    } catch (err: any) {
+      setError(err.message || 'An unexpected error occurred')
       setLoading(false)
     }
   }
