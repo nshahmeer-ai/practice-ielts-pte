@@ -2,6 +2,7 @@ import React from 'react'
 import { notFound } from 'next/navigation'
 import { client } from '../../sanity/client'
 import type { Metadata } from 'next'
+import TestTabs from '../../components/TestTabs'
 
 export const revalidate = 60 // Revalidate every minute
 
@@ -102,22 +103,22 @@ export default async function DynamicHubPage({ params }: Props) {
             </span>
           </div>
           <h1 className="hero__title">{page.heroTitle}</h1>
-          <p className="hero__subtitle" style={{ maxWidth: '600px', margin: '0 auto 60px' }}>
+          <p className="hero__subtitle" style={{ maxWidth: '600px', margin: '0 auto 40px' }}>
             {page.heroDescription}
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', textAlign: 'left' }}>
+          <TestTabs testType={resolvedParams.testType} />
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
             {page.modules && page.modules.length > 0 ? (
               page.modules.map((mod, index) => (
-                <div key={index} className="card hover-up" style={{ padding: '24px', backgroundColor: '#fff', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                    <div style={{ width: '40px', height: '40px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: `var(--color-${mod.themeColor || 'purple'}-light, #f0f0ff)`, color: `var(--color-${mod.themeColor || 'purple'})` }}>
-                      <span className="material-symbols-outlined" style={{ fontSize: '1.2rem' }}>{mod.icon || 'quiz'}</span>
-                    </div>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 600, margin: 0, color: '#1a1a2e' }}>{mod.title}</h3>
+                <div key={index} className="card hover-up" style={{ padding: '32px 24px', backgroundColor: '#fff', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+                  <div style={{ width: '56px', height: '56px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: `var(--color-${mod.themeColor || 'purple'}-light, #f0f0ff)`, color: `var(--color-${mod.themeColor || 'purple'})`, marginBottom: '16px' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: '1.5rem' }}>{mod.icon || 'quiz'}</span>
                   </div>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 12px 0', color: '#1a1a2e' }}>{mod.title}</h3>
                   
-                  <p style={{ color: 'var(--color-muted)', fontSize: '0.9rem', lineHeight: 1.5, flexGrow: 1, marginBottom: '20px' }}>
+                  <p style={{ color: 'var(--color-muted)', fontSize: '0.9rem', lineHeight: 1.6, flexGrow: 1, marginBottom: '24px' }}>
                     {mod.description}
                   </p>
                   

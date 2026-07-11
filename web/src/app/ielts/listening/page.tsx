@@ -1,4 +1,5 @@
 import { client } from '../../../sanity/client'
+import TestTabs from '../../../components/TestTabs'
 
 export const revalidate = 60 // Revalidate every 60 seconds
 
@@ -34,6 +35,8 @@ export default async function IELTSListeningPage() {
               <p style={{ color: 'rgba(255,255,255,0.8)' }}>Practice with authentic audio recordings. 40 questions per test, 30 minutes duration.</p>
             </span>
           </div>
+
+          <TestTabs testType="ielts" />
 
           {/* Module Quick Info */}
           <div className="grid-3" style={{ marginBottom: '36px' }}>
