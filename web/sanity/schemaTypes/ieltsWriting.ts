@@ -12,6 +12,14 @@ export const ieltsWriting = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: 'examTrack',
+      title: 'Exam Track (Academic vs General)',
+      type: 'string',
+      options: { list: ['Academic', 'General Training'] },
+      initialValue: 'Academic',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
       name: 'duration',
       title: 'Duration (minutes)',
       type: 'number',
