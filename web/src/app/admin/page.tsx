@@ -88,7 +88,7 @@ export default async function AdminDashboard() {
         </div>
         <div>
           <h4 style={{ margin: '0 0 4px 0', fontSize: '1.1rem' }}>Your Role: Super Admin</h4>
-          <p style={{ margin: 0, fontSize: '0.9rem', opacity: 0.9 }}>You have full access to manage all content and tests on the PracticeHub platform.</p>
+          <p style={{ margin: 0, fontSize: '0.9rem', opacity: 0.9 }}>You have full access to manage all content and tests on the Insight English Institute platform.</p>
         </div>
       </div>
     </>

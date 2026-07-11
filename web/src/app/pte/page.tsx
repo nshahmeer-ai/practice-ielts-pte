@@ -1,7 +1,7 @@
 import React from 'react'
 
 export const metadata = {
-  title: 'PTE Practice Tests | PracticeHub',
+  title: 'PTE Practice Tests | Insight English Institute',
   description: 'Free PTE Academic Practice Tests with instant scoring.',
 }
 

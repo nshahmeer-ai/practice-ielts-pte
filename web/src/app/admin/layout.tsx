@@ -2,7 +2,7 @@ import React from 'react'
 import './admin.css'
 
 export const metadata = {
-  title: 'Admin Dashboard | PracticeHub'
+  title: 'Admin Dashboard | Insight English Institute'
 }
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

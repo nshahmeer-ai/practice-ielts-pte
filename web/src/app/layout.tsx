@@ -10,8 +10,8 @@ const lexend = Lexend({
 });
 
 export const metadata: Metadata = {
-  title: "IELTS & PTE Practice",
-  description: "Free IELTS & PTE Practice Tests Platform",
+  title: "Insight English Institute | IELTS & PTE Prep",
+  description: "Insight English Institute - Free IELTS & PTE Practice Tests Platform",
 };
 
 export default function RootLayout({
@@ -35,9 +35,9 @@ export default function RootLayout({
                   <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>school</span>
                 </div>
                 <div className="navbar__logo-text" style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '1.05rem' }}>
-                  <span>Practice</span>
-                  <span className="text-purple">IELTS</span>&amp;
-                  <span className="text-teal">PTE</span>
+                  <span>Insight</span>
+                  <span className="text-purple">English</span>
+                  <span className="text-teal">Institute</span>
                 </div>
               </a>
 
@@ -82,11 +82,11 @@ export default function RootLayout({
                   <div className="footer__logo-icon">
                     <span className="material-symbols-outlined">school</span>
                   </div>
-                  <span className="badge badge-purple" style={{fontSize: '0.75rem'}}>PRACTICE IELTS &amp; PTE</span>
+                  <span className="badge badge-purple" style={{fontSize: '0.75rem'}}>INSIGHT ENGLISH INSTITUTE</span>
                 </div>
                 <h2 className="footer__brand-title">Free, high-quality<br/>practice tests.</h2>
                 <p className="footer__brand-desc">
-                  Free, high-quality IELTS and PTE practice tests. 200+ tests across all modules. No registration. No subscription. Always free.
+                  Insight English Institute provides high-quality IELTS and PTE practice tests. 200+ tests across all modules. No registration. No subscription. Always free.
                 </p>
                 <div style={{display: 'flex', alignItems: 'center', gap: '12px', marginTop: '24px', flexWrap: 'wrap'}}>
                   <a href="/ielts/listening/1" className="btn btn-primary" style={{borderRadius: '30px', padding: '12px 24px'}}>Start Practising <span className="material-symbols-outlined icon-sm">arrow_right_alt</span></a>
@@ -151,7 +151,7 @@ export default function RootLayout({
               <div>
                 <span style={{fontWeight: 600, color: 'var(--color-text)'}}>Made with <span className="material-symbols-outlined" style={{color: 'var(--color-purple)', fontSize: '0.9rem', verticalAlign: 'middle', fontVariationSettings: "'FILL' 1"}}>favorite</span> in London</span>
                 <span style={{color: 'var(--color-muted)', marginLeft: '4px'}}>— by English learners for English learners.</span>
-                <div style={{color: 'var(--color-muted)', fontSize: '0.75rem', marginTop: '6px'}}>&copy; 2026 Practice IELTS &amp; PTE. All rights reserved.</div>
+                <div style={{color: 'var(--color-muted)', fontSize: '0.75rem', marginTop: '6px'}}>&copy; 2026 Insight English Institute. All rights reserved.</div>
               </div>
               <div className="footer__legal" style={{display: 'flex', gap: '16px'}}>
                 <a href="#" style={{color: 'var(--color-muted)', fontSize: '0.85rem'}}>Privacy</a>

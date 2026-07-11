@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   return {
-    title: `${page.heroTitle} | PracticeHub`,
+    title: `${page.heroTitle} | Insight English Institute`,
     description: page.heroDescription,
   }
 }
