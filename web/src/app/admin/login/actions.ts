@@ -11,7 +11,8 @@ export async function loginAdmin(password: string) {
 
   if (password === correctPassword) {
     // Set a secure, HTTP-only cookie
-    cookies().set({
+    const cookieStore = await cookies();
+    cookieStore.set({
       name: 'admin_session',
       value: 'authenticated',
       httpOnly: true,
@@ -28,5 +29,6 @@ export async function loginAdmin(password: string) {
 }
 
 export async function logoutAdmin() {
-  cookies().delete('admin_session')
+  const cookieStore = await cookies();
+  cookieStore.delete('admin_session')
 }
