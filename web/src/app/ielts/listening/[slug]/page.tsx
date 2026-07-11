@@ -6,7 +6,11 @@ import { PortableText } from '@portabletext/react'
 import parse, { domToReact } from 'html-react-parser'
 import './interactive-test.css'
 
-export default function InteractiveListeningTest({ params }: { params: { slug: string } }) {
+export default function InteractiveListeningTest({ params }: { params: any }) {
+  // In newer Next.js versions, params might be a Promise
+  const resolvedParams = params instanceof Promise ? React.use(params) : params;
+  const slug = resolvedParams?.slug;
+
   const [test, setTest] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [timeLeft, setTimeLeft] = useState(30 * 60) // Default 30 mins
@@ -17,17 +21,23 @@ export default function InteractiveListeningTest({ params }: { params: { slug: s
 
   useEffect(() => {
     async function fetchTest() {
-      const data = await client.fetch(`*[_type == "ieltsListening" && slug.current == $slug][0]`, {
-        slug: params.slug
-      })
-      if (data) {
-        setTest(data)
-        if (data.duration) setTimeLeft(data.duration * 60)
+      if (!slug) return;
+      try {
+        const data = await client.fetch(`*[_type == "ieltsListening" && slug.current == $slug][0]`, {
+          slug: slug
+        })
+        if (data) {
+          setTest(data)
+          if (data.duration) setTimeLeft(data.duration * 60)
+        }
+      } catch (err) {
+        console.error("Failed to fetch test:", err)
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     }
     fetchTest()
-  }, [params.slug])
+  }, [slug])
 
   useEffect(() => {
     if (!isPlaying || submitted) return
