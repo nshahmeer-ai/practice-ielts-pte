@@ -30,9 +30,11 @@ export default function RootLayout({
           <nav className="navbar" role="navigation" aria-label="Main navigation">
             <div className="navbar__inner">
               {/* Logo */}
-              <a href="/" className="navbar__logo" aria-label="Home">
-                <div className="navbar__logo-icon" aria-hidden="true"><span className="material-symbols-outlined">school</span></div>
-                <div className="navbar__logo-text" style={{display: 'flex', alignItems: 'center', gap: '4px'}}>
+              <a href="/" className="navbar__logo" aria-label="Home" style={{ gap: '8px' }}>
+                <div className="navbar__logo-icon" aria-hidden="true" style={{ width: '32px', height: '32px' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>school</span>
+                </div>
+                <div className="navbar__logo-text" style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '1.05rem' }}>
                   <span>Practice</span>
                   <span className="text-purple">IELTS</span>&amp;
                   <span className="text-teal">PTE</span>
@@ -40,33 +42,25 @@ export default function RootLayout({
               </a>
 
               {/* Desktop Navigation Stickers */}
-              <nav className="navbar__nav" role="list">
+              <nav className="navbar__nav" role="list" style={{ justifyContent: 'center' }}>
                 <a href="/ielts" className="nav-sticker">
                   <span className="material-symbols-outlined">school</span> IELTS
-                </a>
-                <a href="/ielts/listening" className="nav-sticker">
-                  <span className="material-symbols-outlined">headphones</span> Listening
-                </a>
-                <a href="/ielts/reading" className="nav-sticker">
-                  <span className="material-symbols-outlined">menu_book</span> Reading
-                </a>
-                <a href="/ielts/writing" className="nav-sticker">
-                  <span className="material-symbols-outlined">edit_note</span> Writing
-                </a>
-                <a href="/ielts/speaking" className="nav-sticker">
-                  <span className="material-symbols-outlined">mic</span> Speaking
                 </a>
                 <a href="/pte" className="nav-sticker">
                   <span className="material-symbols-outlined">work</span> PTE
                 </a>
-              </nav>
-
-              {/* Desktop CTA */}
-              <div className="navbar__actions">
-                <a href="/ielts/listening/1" className="btn btn-primary btn-sm">
-                  Start Practice <span className="material-symbols-outlined icon-sm" style={{marginLeft: '4px'}}>arrow_forward</span>
+                <a href="#" className="nav-sticker">
+                  <span className="material-symbols-outlined">language</span> TOEFL
                 </a>
-              </div>
+                <a href="#" className="nav-sticker">
+                  <span className="material-symbols-outlined">public</span> OET
+                </a>
+                <a href="#" className="nav-sticker">
+                  <span className="material-symbols-outlined">spellcheck</span> Duolingo
+                </a>
+              </nav>
+              
+              <div style={{ width: '150px' }}></div>
             </div>
           </nav>
         </div>
