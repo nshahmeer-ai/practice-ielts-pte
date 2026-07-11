@@ -261,3 +261,19 @@
   font-size: 1.5rem;
   color: #64748b;
 }
+
+/* Table styles for passage content */
+.passage-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+.passage-content th, .passage-content td {
+  border: 1px solid #cbd5e1;
+  padding: 12px;
+  text-align: left;
+}
+.passage-content th {
+  background-color: #f1f5f9;
+  font-weight: bold;
+}
