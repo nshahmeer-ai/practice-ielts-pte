@@ -44,47 +44,69 @@ export const ieltsListening = defineType({
       description: 'Paste the shareable Google Drive link for the audio track.',
     }),
     defineField({
-      name: 'questions',
-      title: 'Questions',
+      name: 'sections',
+      title: 'Listening Sections',
       type: 'array',
       of: [
         {
           type: 'object',
           fields: [
-            { name: 'questionNumber', title: 'Question Number (e.g., 1)', type: 'number' },
-            { name: 'questionText', title: 'Question Text', type: 'string' },
-            { 
-              name: 'googleDriveImageContext', 
-              title: 'Context Image (Google Drive URL)', 
+            {
+              name: 'sectionTitle',
+              title: 'Section Title (e.g., Part 1: Questions 1-10)',
               type: 'string',
-              description: 'Optional: Paste a Google Drive image link for Maps, Diagrams, or Tables related to this question.'
             },
-            { 
-              name: 'questionType', 
-              title: 'Question Type', 
-              type: 'string', 
-              options: { list: ['Multiple Choice', 'Fill in the Blank', 'Matching', 'Map Labeling'] } 
-            },
-            { 
-              name: 'options', 
-              title: 'Options (comma separated)', 
+            {
+              name: 'googleDriveImageContext',
+              title: 'Context Image (Google Drive URL)',
               type: 'string',
-              description: 'e.g. A, B, C (Leave blank for Fill in the Blank)'
+              description: 'Optional: Paste a Google Drive image link for Maps, Diagrams, or Tables related to this section.'
             },
-            { name: 'correctAnswer', title: 'Correct Answer', type: 'string' },
-            { name: 'explanation', title: 'Explanation', type: 'text', description: 'Explain why this is the correct answer.' }
+            {
+              name: 'questions',
+              title: 'Questions for this Section',
+              type: 'array',
+              of: [
+                {
+                  type: 'object',
+                  fields: [
+                    { name: 'questionNumber', title: 'Question Number (e.g., 1)', type: 'number' },
+                    { name: 'questionText', title: 'Question Text', type: 'string' },
+                    { 
+                      name: 'questionType', 
+                      title: 'Question Type', 
+                      type: 'string', 
+                      options: { list: ['Multiple Choice', 'Fill in the Blank', 'Matching', 'Map Labeling', 'Multiple Select'] } 
+                    },
+                    { 
+                      name: 'options', 
+                      title: 'Options (comma separated)', 
+                      type: 'string',
+                      description: 'e.g. A, B, C (Leave blank for Fill in the Blank)'
+                    },
+                    { name: 'correctAnswer', title: 'Correct Answer', type: 'string' },
+                    { name: 'explanation', title: 'Explanation', type: 'text', description: 'Explain why this is the correct answer.' }
+                  ],
+                  preview: {
+                    select: {
+                      title: 'questionNumber',
+                      subtitle: 'questionType',
+                    },
+                    prepare(selection) {
+                      const { title, subtitle } = selection
+                      return {
+                        title: title ? `Question ${title}` : 'New Question',
+                        subtitle: subtitle
+                      }
+                    }
+                  }
+                }
+              ]
+            }
           ],
           preview: {
             select: {
-              title: 'questionNumber',
-              subtitle: 'questionType',
-            },
-            prepare(selection) {
-              const { title, subtitle } = selection
-              return {
-                title: title ? `Question ${title}` : 'New Question',
-                subtitle: subtitle
-              }
+              title: 'sectionTitle',
             }
           }
         }
