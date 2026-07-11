@@ -100,6 +100,25 @@ export default function InteractiveListeningTest({ params }: { params: any }) {
     return test?.questions?.length || 0;
   }
 
+  const getBandScore = (score: number, total: number) => {
+    if (total === 0) return '0.0'
+    const equivalentScore = Math.round((score / total) * 40)
+    if (equivalentScore >= 39) return '9.0'
+    if (equivalentScore >= 37) return '8.5'
+    if (equivalentScore >= 35) return '8.0'
+    if (equivalentScore >= 32) return '7.5'
+    if (equivalentScore >= 30) return '7.0'
+    if (equivalentScore >= 26) return '6.5'
+    if (equivalentScore >= 23) return '6.0'
+    if (equivalentScore >= 18) return '5.5'
+    if (equivalentScore >= 16) return '5.0'
+    if (equivalentScore >= 13) return '4.5'
+    if (equivalentScore >= 10) return '4.0'
+    if (equivalentScore >= 7) return '3.5'
+    if (equivalentScore >= 5) return '3.0'
+    return '0.0'
+  }
+
   if (loading) return <div className="test-loading">Loading Test Environment...</div>
   if (!test) return <div className="test-not-found">Test not found</div>
 
@@ -121,7 +140,14 @@ export default function InteractiveListeningTest({ params }: { params: any }) {
               onLoad={() => setIsPlaying(true)}
             ></iframe>
           ) : test.audioUrl ? (
-            <audio controls onPlay={() => setIsPlaying(true)} onPause={() => setIsPlaying(false)} className="custom-audio">
+            <audio 
+              controls 
+              controlsList="nodownload noplaybackrate"
+              onPlay={() => setIsPlaying(true)} 
+              onPause={() => setIsPlaying(false)}
+              onEnded={handleSubmit} 
+              className="custom-audio"
+            >
               <source src={test.audioUrl} type="audio/mpeg" />
             </audio>
           ) : (
@@ -295,10 +321,63 @@ export default function InteractiveListeningTest({ params }: { params: any }) {
           <button className="submit-test-btn" onClick={handleSubmit}>Submit Test</button>
         ) : (
           <div className="results-panel">
-            <h2>Test Complete</h2>
-            <div className="score-display">
-              <span className="score-number">{score} / {getTotalQuestions()}</span>
-              <span className="score-label">Correct Answers</span>
+            <h2 style={{ fontSize: '2rem', marginBottom: '8px' }}>Test Complete</h2>
+            <p style={{ color: '#94a3b8', marginBottom: '32px' }}>Here is your detailed performance breakdown.</p>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '40px' }}>
+              <div style={{ background: 'rgba(255,255,255,0.05)', padding: '24px', borderRadius: '12px' }}>
+                <div className="score-number">{score} / {getTotalQuestions()}</div>
+                <div className="score-label">Raw Score</div>
+              </div>
+              <div style={{ background: 'rgba(56, 189, 248, 0.1)', padding: '24px', borderRadius: '12px', border: '1px solid rgba(56, 189, 248, 0.2)' }}>
+                <div className="score-number" style={{ color: '#38bdf8' }}>{getBandScore(score, getTotalQuestions())}</div>
+                <div className="score-label" style={{ color: '#7dd3fc' }}>Estimated IELTS Band</div>
+              </div>
+            </div>
+
+            <h3 style={{ fontSize: '1.5rem', marginBottom: '24px', textAlign: 'left', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '12px' }}>Mistake Matcher</h3>
+            
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+                    <th style={{ padding: '12px', color: '#94a3b8' }}>#</th>
+                    <th style={{ padding: '12px', color: '#94a3b8' }}>Your Answer</th>
+                    <th style={{ padding: '12px', color: '#94a3b8' }}>Correct Answer</th>
+                    <th style={{ padding: '12px', color: '#94a3b8' }}>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {test.questions?.map((q: any) => {
+                    const userAns = (answers[q.questionNumber] || '').trim()
+                    const correctAns = (q.correctAnswer || '').trim()
+                    let isCorrect = false
+                    
+                    if (q.questionType === 'Multiple Select') {
+                      const userArr = userAns.toLowerCase().split(',').map(s => s.trim()).filter(Boolean).sort()
+                      const correctArr = correctAns.toLowerCase().split(',').map(s => s.trim()).filter(Boolean).sort()
+                      isCorrect = JSON.stringify(userArr) === JSON.stringify(correctArr)
+                    } else {
+                      isCorrect = userAns.toLowerCase() === correctAns.toLowerCase()
+                    }
+
+                    return (
+                      <tr key={q._key} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                        <td style={{ padding: '12px', fontWeight: 'bold' }}>{q.questionNumber}</td>
+                        <td style={{ padding: '12px', color: userAns ? 'white' : '#64748b' }}>{userAns || '(no answer)'}</td>
+                        <td style={{ padding: '12px', color: '#a7f3d0' }}>{correctAns}</td>
+                        <td style={{ padding: '12px' }}>
+                          {isCorrect ? (
+                            <span style={{ display: 'inline-block', padding: '4px 8px', background: 'rgba(34, 197, 94, 0.2)', color: '#4ade80', borderRadius: '4px', fontSize: '0.85rem', fontWeight: 'bold' }}>✅ Correct</span>
+                          ) : (
+                            <span style={{ display: 'inline-block', padding: '4px 8px', background: 'rgba(239, 68, 68, 0.2)', color: '#f87171', borderRadius: '4px', fontSize: '0.85rem', fontWeight: 'bold' }}>❌ Incorrect</span>
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
