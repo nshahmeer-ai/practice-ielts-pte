@@ -172,8 +172,9 @@ export default function InteractiveListeningTest({ params }: { params: any }) {
 
         {test.passageContent && (
           <div className="passage-content" style={{ marginBottom: '40px', background: 'white', padding: '32px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.05)', fontSize: '16px', lineHeight: '1.6', overflowX: 'auto' }}>
-            {(() => {
-              // Replace [[X]] with custom element
+            {React.useMemo(() => {
+              if (!test.passageContent) return null;
+              let inputCounter = 1;
               const htmlWithTags = test.passageContent.replace(/\[\[(\d+)\]\]/g, '<inline-question data-id="$1"></inline-question>')
               
               const options = {
@@ -197,18 +198,49 @@ export default function InteractiveListeningTest({ params }: { params: any }) {
                             boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.05)'
                           }}
                           className={`fill-blank-input inline-input ${submitted ? 'submitted' : ''}`}
-                          value={answers[qNum] || ''}
+                          defaultValue={answers[qNum] || ''}
                           onChange={(e) => handleAnswerChange(qNum, e.target.value)}
                           disabled={submitted}
                         />
                       </span>
                     )
                   }
+
+                  if (domNode.name === 'input') {
+                    let qNum = inputCounter;
+                    const nameAttr = domNode.attribs?.name || domNode.attribs?.id || '';
+                    const match = nameAttr.match(/\d+/);
+                    if (match) {
+                      qNum = parseInt(match[0]);
+                    } else {
+                      inputCounter++;
+                    }
+
+                    return (
+                        <input
+                          type="text"
+                          style={{
+                            width: '150px',
+                            padding: '6px 12px',
+                            borderRadius: '4px',
+                            border: '2px solid #cbd5e1',
+                            fontSize: '15px',
+                            outline: 'none',
+                            transition: 'border-color 0.2s',
+                            boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.05)'
+                          }}
+                          className={`fill-blank-input inline-input ${submitted ? 'submitted' : ''}`}
+                          defaultValue={answers[qNum] || ''}
+                          onChange={(e) => handleAnswerChange(qNum, e.target.value)}
+                          disabled={submitted}
+                        />
+                    )
+                  }
                 }
               }
 
               return parse(htmlWithTags, options)
-            })()}
+            }, [test.passageContent, submitted])}
           </div>
         )}
 
