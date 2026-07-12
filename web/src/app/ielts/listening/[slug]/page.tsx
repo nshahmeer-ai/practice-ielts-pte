@@ -212,38 +212,7 @@ export default function InteractiveListeningTest({ params }: { params: any }) {
           </div>
         )}
 
-        {/* Answer Sheet Grid (Only if rawAnswerKey exists) */}
-        {test.rawAnswerKey && (
-          <div style={{ background: 'white', padding: '32px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.05)', marginBottom: '32px' }}>
-            <h2 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '24px', color: '#1e293b', borderBottom: '1px solid #e2e8f0', paddingBottom: '12px' }}>Your Answers</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px' }}>
-              {test.rawAnswerKey.split('\n').map((l: string) => l.trim()).filter(Boolean).map((line: string, index: number) => {
-                const qNum = index + 1;
-                return (
-                  <div key={qNum} style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                    <span style={{ fontWeight: 'bold', color: '#64748b', fontSize: '15px', width: '24px', textAlign: 'right' }}>{qNum}.</span>
-                    <input 
-                      type="text" 
-                      style={{ 
-                        flex: 1, 
-                        padding: '10px 12px', 
-                        borderRadius: '6px', 
-                        border: '2px solid #cbd5e1', 
-                        fontSize: '15px', 
-                        outline: 'none',
-                        background: submitted ? '#f1f5f9' : 'white'
-                      }}
-                      placeholder="Type answer..." 
-                      value={answers[qNum] || ''}
-                      onChange={(e) => handleAnswerChange(qNum, e.target.value)}
-                      disabled={submitted}
-                    />
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        )}
+
 
         {/* Legacy Questions (Fallback) */}
         {!test.rawAnswerKey && test.questions && (
