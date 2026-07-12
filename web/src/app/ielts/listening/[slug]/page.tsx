@@ -335,8 +335,33 @@ export default function InteractiveListeningTest({ params }: { params: any }) {
           <button className="submit-test-btn" onClick={handleSubmit}>Submit Test</button>
         ) : (
           <div className="results-panel">
-            <h2 style={{ fontSize: '2rem', marginBottom: '8px' }}>Test Complete</h2>
-            <p style={{ color: '#94a3b8', marginBottom: '32px' }}>Here is your detailed performance breakdown.</p>
+            <h2 style={{ fontSize: '2rem', marginBottom: '16px' }}>Test Complete</h2>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap', gap: '16px' }}>
+              <p style={{ color: '#94a3b8', margin: 0 }}>Here is your detailed performance breakdown.</p>
+              <button 
+                onClick={() => window.location.href = '/ielts/listening'}
+                style={{
+                  background: 'rgba(255,255,255,0.1)',
+                  color: 'white',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  padding: '10px 20px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '15px',
+                  fontWeight: '600',
+                  transition: 'all 0.2s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+                onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)'; }}
+                onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>arrow_back</span>
+                Back to Listening Page
+              </button>
+            </div>
             
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '40px' }}>
               <div style={{ background: 'rgba(255,255,255,0.05)', padding: '24px', borderRadius: '12px' }}>
