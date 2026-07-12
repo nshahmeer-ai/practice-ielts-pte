@@ -49,6 +49,12 @@ export const ieltsListening = defineType({
       description: 'Paste the shareable Google Drive link for the audio track.',
     }),
     defineField({
+      name: 'rawAnswerKey',
+      title: 'Raw Answer Key',
+      type: 'text',
+      description: 'Paste the list of correct answers here, e.g., 1. Answer 2. Answer. This generates the answer sheet.',
+    }),
+    defineField({
       name: 'questions',
       title: 'Questions',
       type: 'array',

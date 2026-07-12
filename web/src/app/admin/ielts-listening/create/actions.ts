@@ -27,14 +27,8 @@ export async function createListeningTest(data: any) {
       duration: data.duration,
       passageContent: data.passageContent,
       transcript: data.transcript,
-      questions: data.questions.map((q: any) => ({
-        _key: crypto.randomUUID(),
-        questionText: q.questionText,
-        questionType: q.questionType,
-        correctAnswer: q.correctAnswer,
-        options: q.options || [],
-        explanation: q.explanation || ''
-      }))
+      googleDriveAudioUrl: data.googleDriveAudioUrl,
+      rawAnswerKey: data.rawAnswerKey
     }
 
     const result = await writeClient.create(doc)
@@ -66,14 +60,8 @@ export async function updateListeningTest(id: string, data: any) {
       duration: data.duration,
       passageContent: data.passageContent,
       transcript: data.transcript,
-      questions: data.questions.map((q: any) => ({
-        _key: q._key || crypto.randomUUID(),
-        questionText: q.questionText,
-        questionType: q.questionType,
-        correctAnswer: q.correctAnswer,
-        options: q.options || [],
-        explanation: q.explanation || ''
-      }))
+      googleDriveAudioUrl: data.googleDriveAudioUrl,
+      rawAnswerKey: data.rawAnswerKey
     }
 
     await writeClient.patch(id).set(doc).commit()

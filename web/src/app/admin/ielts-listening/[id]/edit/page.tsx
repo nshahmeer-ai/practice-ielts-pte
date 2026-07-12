@@ -21,7 +21,7 @@ export default function EditIeltsListening({ params }: { params: any }) {
     duration: 30,
     passageContent: '',
     googleDriveAudioUrl: '',
-    questions: [] as any[]
+    rawAnswerKey: ''
   })
 
   useEffect(() => {
@@ -35,7 +35,7 @@ export default function EditIeltsListening({ params }: { params: any }) {
             duration: data.duration || 30,
             passageContent: data.passageContent || '',
             googleDriveAudioUrl: data.googleDriveAudioUrl || '',
-            questions: data.questions || []
+            rawAnswerKey: data.rawAnswerKey || ''
           })
         }
       } catch (err) {
@@ -47,71 +47,6 @@ export default function EditIeltsListening({ params }: { params: any }) {
     }
     fetchTest()
   }, [id])
-
-  const handleAddQuestion = () => {
-    setTestData(prev => ({
-      ...prev,
-      questions: [
-        ...prev.questions,
-        {
-          questionNumber: prev.questions.length + 1,
-          questionText: '',
-          questionType: 'Fill in the Blank',
-          options: '',
-          correctAnswer: '',
-          explanation: '',
-          googleDriveImageContext: ''
-        }
-      ]
-    }))
-  }
-
-  const handleQuestionChange = (index: number, field: string, value: any) => {
-    setTestData(prev => {
-      const newQs = [...prev.questions]
-      newQs[index] = { ...newQs[index], [field]: value }
-      return { ...prev, questions: newQs }
-    })
-  }
-
-  const handleRemoveQuestion = (index: number) => {
-    setTestData(prev => ({
-      ...prev,
-      questions: prev.questions.filter((_, i) => i !== index).map((q, i) => ({ ...q, questionNumber: i + 1 }))
-    }))
-  }
-
-  const [bulkAnswers, setBulkAnswers] = useState('')
-
-  const applyBulkAnswers = () => {
-    const lines = bulkAnswers.split('\n').map(l => l.trim()).filter(Boolean);
-    if (lines.length === 0) return;
-    
-    setTestData(prev => {
-      const newQs = [...prev.questions];
-      lines.forEach((line, index) => {
-        // Strip leading numbers like "1. ", "1)", "01."
-        const answer = line.replace(/^\d+[\.\)\-]?\s*/, '').trim();
-        
-        if (newQs[index]) {
-          newQs[index].correctAnswer = answer;
-        } else {
-          newQs.push({
-            questionNumber: index + 1,
-            questionText: '',
-            questionType: 'Fill in the Blank',
-            options: '',
-            correctAnswer: answer,
-            explanation: '',
-            googleDriveImageContext: ''
-          });
-        }
-      });
-      return { ...prev, questions: newQs };
-    });
-    setBulkAnswers('');
-    alert(`Successfully imported ${lines.length} answers!`);
-  }
 
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault()
@@ -245,129 +180,24 @@ export default function EditIeltsListening({ params }: { params: any }) {
           </div>
         </div>
 
-        {/* Questions Array */}
+        {/* Answer Key */}
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '1px solid var(--admin-border)', paddingBottom: '12px', marginBottom: '24px' }}>
-            <h2 style={{ fontSize: '18px', fontWeight: 'bold' }}>Questions</h2>
-            
-            <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1', width: '400px' }}>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', marginBottom: '6px', color: '#334155' }}>⚡ Bulk Import Answers (Paste 1-40)</label>
-              <textarea 
-                rows={3} 
-                placeholder="1. Apple&#10;2. Banana&#10;3. Car"
-                style={{ width: '100%', padding: '8px', fontSize: '13px', borderRadius: '4px', border: '1px solid #cbd5e1', marginBottom: '8px' }}
-                value={bulkAnswers}
-                onChange={e => setBulkAnswers(e.target.value)}
-              />
-              <button 
-                type="button" 
-                onClick={applyBulkAnswers}
-                style={{ background: '#10b981', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold', width: '100%' }}
-              >
-                Auto-Fill Correct Answers
-              </button>
-            </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--admin-border)', paddingBottom: '12px', marginBottom: '24px' }}>
+            <h2 style={{ fontSize: '18px', fontWeight: 'bold' }}>Answer Key (1-40)</h2>
           </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            {testData.questions.map((q, index) => (
-              <div key={index} style={{ background: '#f8fafc', padding: '24px', borderRadius: '12px', border: '1px solid #e2e8f0', position: 'relative' }}>
-                <div style={{ position: 'absolute', top: '16px', right: '16px' }}>
-                  <button type="button" onClick={() => handleRemoveQuestion(index)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>delete</span>
-                  </button>
-                </div>
-                
-                <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '16px', color: '#0f172a' }}>Question {q.questionNumber || index + 1}</h3>
-
-                <div style={{ display: 'grid', gap: '16px' }}>
-                  
-                  {/* Context Image */}
-                  <div>
-                    <label style={{ display: 'block', fontWeight: '500', marginBottom: '6px', fontSize: '14px', color: '#475569' }}>Context Image (Google Drive URL) - Optional</label>
-                    <input 
-                      type="url" 
-                      placeholder="Map or Diagram Link for this question"
-                      style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px' }}
-                      value={q.googleDriveImageContext || ''}
-                      onChange={e => handleQuestionChange(index, 'googleDriveImageContext', e.target.value)}
-                    />
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '16px' }}>
-                    <div>
-                      <label style={{ display: 'block', fontWeight: '500', marginBottom: '6px', fontSize: '14px', color: '#475569' }}>Question Text</label>
-                      <input 
-                        type="text" 
-                        required 
-                        style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px' }}
-                        value={q.questionText || ''}
-                        onChange={e => handleQuestionChange(index, 'questionText', e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label style={{ display: 'block', fontWeight: '500', marginBottom: '6px', fontSize: '14px', color: '#475569' }}>Question Type</label>
-                      <select 
-                        style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px', background: 'white' }}
-                        value={q.questionType || 'Fill in the Blank'}
-                        onChange={e => handleQuestionChange(index, 'questionType', e.target.value)}
-                      >
-                        <option value="Fill in the Blank">Fill in the Blank</option>
-                        <option value="Multiple Choice">Multiple Choice</option>
-                        <option value="Matching">Matching</option>
-                        <option value="Map Labeling">Map Labeling</option>
-                        <option value="Multiple Select">Multiple Select</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  {(q.questionType === 'Multiple Choice' || q.questionType === 'Multiple Select') && (
-                    <div>
-                      <label style={{ display: 'block', fontWeight: '500', marginBottom: '6px', fontSize: '14px', color: '#475569' }}>Options (Comma Separated)</label>
-                      <input 
-                        type="text" 
-                        placeholder="e.g., A, B, C, D"
-                        style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px' }}
-                        value={q.options || ''}
-                        onChange={e => handleQuestionChange(index, 'options', e.target.value)}
-                      />
-                    </div>
-                  )}
-
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                    <div>
-                      <label style={{ display: 'block', fontWeight: '500', marginBottom: '6px', fontSize: '14px', color: '#475569' }}>Correct Answer</label>
-                      <input 
-                        type="text" 
-                        required 
-                        style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px', borderLeft: '3px solid #22c55e' }}
-                        value={q.correctAnswer || ''}
-                        onChange={e => handleQuestionChange(index, 'correctAnswer', e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label style={{ display: 'block', fontWeight: '500', marginBottom: '6px', fontSize: '14px', color: '#475569' }}>Explanation (Optional)</label>
-                      <input 
-                        type="text" 
-                        style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px' }}
-                        value={q.explanation || ''}
-                        onChange={e => handleQuestionChange(index, 'explanation', e.target.value)}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
+          
+          <div>
+            <label style={{ display: 'block', fontWeight: '600', marginBottom: '8px', color: '#334155' }}>Paste the list of correct answers</label>
+            <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '12px' }}>This will automatically generate a 1-40 Answer Sheet for the student. Please paste the answers in sequence.</p>
+            <textarea 
+              required
+              rows={40}
+              placeholder="1. Fish&#10;2. Roof&#10;3. Spanish"
+              style={{ width: '100%', padding: '16px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '15px', fontFamily: 'monospace' }}
+              value={testData.rawAnswerKey}
+              onChange={e => setTestData({...testData, rawAnswerKey: e.target.value})}
+            />
           </div>
-
-          <button 
-            type="button" 
-            onClick={handleAddQuestion}
-            style={{ marginTop: '24px', width: '100%', padding: '16px', background: '#f1f5f9', border: '2px dashed #cbd5e1', borderRadius: '12px', color: '#475569', fontWeight: '600', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', fontSize: '16px' }}
-          >
-            <span className="material-symbols-outlined">add_circle</span>
-            Add Question
-          </button>
         </div>
 
         <div style={{ marginTop: '48px', paddingTop: '24px', borderTop: '1px solid var(--admin-border)', display: 'flex', justifyContent: 'flex-end', gap: '16px' }}>

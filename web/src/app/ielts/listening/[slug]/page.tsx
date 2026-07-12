@@ -56,22 +56,45 @@ export default function InteractiveListeningTest({ params }: { params: any }) {
   const handleSubmit = () => {
     setSubmitted(true)
     let correct = 0
-    test?.questions?.forEach((q: any) => {
-      const userAns = (answers[q.questionNumber] || '').toLowerCase().trim()
-      const correctAns = (q.correctAnswer || '').toLowerCase().trim()
-      
-      if (q.questionType === 'Multiple Select') {
-        const userArr = userAns.split(',').map((s: string) => s.trim()).filter(Boolean).sort()
-        const correctArr = correctAns.split(',').map((s: string) => s.trim()).filter(Boolean).sort()
-        if (JSON.stringify(userArr) === JSON.stringify(correctArr)) correct++
-      } else {
-        if (userAns === correctAns) correct++
-      }
-    })
+    
+    if (test?.rawAnswerKey) {
+      test.rawAnswerKey.split('\n').map((l: string) => l.trim()).filter(Boolean).forEach((line: string, index: number) => {
+        const qNum = index + 1;
+        const userAns = (answers[qNum] || '').toLowerCase().trim();
+        const correctAns = line.replace(/^\d+[\.\)\-]?\s*/, '').toLowerCase().trim();
+        
+        if (correctAns.includes(',')) {
+          const userArr = userAns.split(',').map((s: string) => s.trim()).filter(Boolean).sort()
+          const correctArr = correctAns.split(',').map((s: string) => s.trim()).filter(Boolean).sort()
+          if (JSON.stringify(userArr) === JSON.stringify(correctArr)) correct++
+        } else if (correctAns.includes('/')) {
+          const possibleAnswers = correctAns.split('/').map((s: string) => s.trim())
+          if (possibleAnswers.includes(userAns)) correct++
+        } else {
+          if (userAns === correctAns) correct++
+        }
+      });
+    } else {
+      test?.questions?.forEach((q: any) => {
+        const userAns = (answers[q.questionNumber] || '').toLowerCase().trim()
+        const correctAns = (q.correctAnswer || '').toLowerCase().trim()
+        
+        if (q.questionType === 'Multiple Select') {
+          const userArr = userAns.split(',').map((s: string) => s.trim()).filter(Boolean).sort()
+          const correctArr = correctAns.split(',').map((s: string) => s.trim()).filter(Boolean).sort()
+          if (JSON.stringify(userArr) === JSON.stringify(correctArr)) correct++
+        } else {
+          if (userAns === correctAns) correct++
+        }
+      })
+    }
     setScore(correct)
   }
 
   const getTotalQuestions = () => {
+    if (test?.rawAnswerKey) {
+      return test.rawAnswerKey.split('\n').map((l: string) => l.trim()).filter(Boolean).length;
+    }
     return test?.questions?.length || 0;
   }
 
@@ -189,126 +212,121 @@ export default function InteractiveListeningTest({ params }: { params: any }) {
           </div>
         )}
 
-        <div className="questions-container">
-          {test.questions?.map((q: any) => (
-            <div key={q._key} className={`question-block ${submitted ? 'submitted' : ''}`}>
-              <div className="question-header">
-                <span className="q-num">{q.questionNumber}.</span>
-                <span className="q-text">{q.questionText}</span>
-              </div>
+        {/* Answer Sheet Grid (Only if rawAnswerKey exists) */}
+        {test.rawAnswerKey && (
+          <div style={{ background: 'white', padding: '32px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.05)', marginBottom: '32px' }}>
+            <h2 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '24px', color: '#1e293b', borderBottom: '1px solid #e2e8f0', paddingBottom: '12px' }}>Your Answers</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px' }}>
+              {test.rawAnswerKey.split('\n').map((l: string) => l.trim()).filter(Boolean).map((line: string, index: number) => {
+                const qNum = index + 1;
+                return (
+                  <div key={qNum} style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                    <span style={{ fontWeight: 'bold', color: '#64748b', fontSize: '15px', width: '24px', textAlign: 'right' }}>{qNum}.</span>
+                    <input 
+                      type="text" 
+                      style={{ 
+                        flex: 1, 
+                        padding: '10px 12px', 
+                        borderRadius: '6px', 
+                        border: '2px solid #cbd5e1', 
+                        fontSize: '15px', 
+                        outline: 'none',
+                        background: submitted ? '#f1f5f9' : 'white'
+                      }}
+                      placeholder="Type answer..." 
+                      value={answers[qNum] || ''}
+                      onChange={(e) => handleAnswerChange(qNum, e.target.value)}
+                      disabled={submitted}
+                    />
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
 
-              {q.googleDriveImageContext && (
-                <div className="q-image-context" style={{ marginBottom: '24px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-                  <img 
-                    src={getDriveDirectUrl(q.googleDriveImageContext)} 
-                    alt="Question Context" 
-                    style={{ width: '100%', height: 'auto', display: 'block', pointerEvents: 'none' }} 
-                    onDragStart={(e) => e.preventDefault()}
-                    onContextMenu={(e) => e.preventDefault()}
-                  />
+        {/* Legacy Questions (Fallback) */}
+        {!test.rawAnswerKey && test.questions && (
+          <div className="questions-container">
+            {test.questions.map((q: any) => (
+              <div key={q._key} className={`question-block ${submitted ? 'submitted' : ''}`}>
+                <div className="question-header">
+                  <span className="q-num">{q.questionNumber}.</span>
+                  <span className="q-text">{q.questionText}</span>
                 </div>
-              )}
 
-              <div className="q-input-area">
-                {q.questionType === 'Multiple Choice' ? (
-                  <div className="options-list">
-                    {q.options?.split(',').map((opt: string) => {
-                      const optionText = opt.trim()
-                      return (
-                        <label key={optionText} className="option-label">
-                          <input 
-                            type="radio" 
-                            name={`q-${q.questionNumber}`}
-                            value={optionText}
-                            checked={answers[q.questionNumber] === optionText}
-                            onChange={(e) => handleAnswerChange(q.questionNumber, e.target.value)}
-                            disabled={submitted}
-                          />
-                          {optionText}
-                        </label>
-                      )
-                    })}
+                {q.googleDriveImageContext && (
+                  <div className="q-image-context" style={{ marginBottom: '24px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                    <img 
+                      src={getDriveDirectUrl(q.googleDriveImageContext)} 
+                      alt="Question Context" 
+                      style={{ width: '100%', height: 'auto', display: 'block', pointerEvents: 'none' }} 
+                      onDragStart={(e) => e.preventDefault()}
+                      onContextMenu={(e) => e.preventDefault()}
+                    />
                   </div>
-                ) : q.questionType === 'Multiple Select' ? (
-                  <div className="options-list">
-                    {q.options?.split(',').map((opt: string) => {
-                      const optionText = opt.trim()
-                      const isChecked = answers[q.questionNumber]?.includes(optionText) || false
-                      return (
-                        <label key={optionText} className="option-label">
-                          <input 
-                            type="checkbox" 
-                            name={`q-${q.questionNumber}`}
-                            value={optionText}
-                            checked={isChecked}
-                            onChange={(e) => handleCheckboxChange(q.questionNumber, optionText, e.target.checked)}
-                            disabled={submitted}
-                          />
-                          {optionText}
-                        </label>
-                      )
-                    })}
-                  </div>
-                ) : test.passageContent?.includes(`[[${q.questionNumber}]]`) ? (
-                  <div style={{ padding: '12px', background: '#f8fafc', borderRadius: '6px', color: '#64748b', fontSize: '14px', border: '1px dashed #cbd5e1' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: '16px', verticalAlign: 'middle', marginRight: '6px' }}>edit_note</span>
-                    <em>Answer this question inline in the passage above.</em>
-                  </div>
-                ) : (
-                  <input 
-                    type="text" 
-                    className="fill-blank-input" 
-                    placeholder="Type answer..." 
-                    value={answers[q.questionNumber] || ''}
-                    onChange={(e) => handleAnswerChange(q.questionNumber, e.target.value)}
-                    disabled={submitted}
-                  />
                 )}
-              </div>
 
-              {submitted && (
-                <div className={`grading-feedback ${(() => {
-                  const userAns = (answers[q.questionNumber] || '').toLowerCase().trim()
-                  const correctAns = (q.correctAnswer || '').toLowerCase().trim()
-                  if (q.questionType === 'Multiple Select') {
-                    const userArr = userAns.split(',').map((s: string) => s.trim()).filter(Boolean).sort()
-                    const correctArr = correctAns.split(',').map((s: string) => s.trim()).filter(Boolean).sort()
-                    return JSON.stringify(userArr) === JSON.stringify(correctArr) ? 'correct' : 'incorrect'
-                  }
-                  return userAns === correctAns ? 'correct' : 'incorrect'
-                })()}`}>
-                  <div className="status">
-                    {(() => {
-                      const userAns = (answers[q.questionNumber] || '').toLowerCase().trim()
-                      const correctAns = (q.correctAnswer || '').toLowerCase().trim()
-                      let isCorrect = false;
-                      if (q.questionType === 'Multiple Select') {
-                        const userArr = userAns.split(',').map((s: string) => s.trim()).filter(Boolean).sort()
-                        const correctArr = correctAns.split(',').map((s: string) => s.trim()).filter(Boolean).sort()
-                        isCorrect = JSON.stringify(userArr) === JSON.stringify(correctArr)
-                      } else {
-                        isCorrect = userAns === correctAns
-                      }
-                      return isCorrect ? (
-                        <><span className="material-symbols-outlined">check_circle</span> Correct</>
-                      ) : (
-                        <><span className="material-symbols-outlined">cancel</span> Incorrect</>
-                      )
-                    })()}
-                  </div>
-                  <div className="correct-answer-reveal">
-                    Correct Answer: <strong>{q.correctAnswer}</strong>
-                  </div>
-                  {q.explanation && (
-                    <div className="explanation">
-                      <strong>Explanation:</strong> {q.explanation}
+                <div className="q-input-area">
+                  {q.questionType === 'Multiple Choice' ? (
+                    <div className="options-list">
+                      {q.options?.split(',').map((opt: string) => {
+                        const optionText = opt.trim()
+                        return (
+                          <label key={optionText} className="option-label">
+                            <input 
+                              type="radio" 
+                              name={`q-${q.questionNumber}`}
+                              value={optionText}
+                              checked={answers[q.questionNumber] === optionText}
+                              onChange={(e) => handleAnswerChange(q.questionNumber, e.target.value)}
+                              disabled={submitted}
+                            />
+                            {optionText}
+                          </label>
+                        )
+                      })}
                     </div>
+                  ) : q.questionType === 'Multiple Select' ? (
+                    <div className="options-list">
+                      {q.options?.split(',').map((opt: string) => {
+                        const optionText = opt.trim()
+                        const isChecked = answers[q.questionNumber]?.includes(optionText) || false
+                        return (
+                          <label key={optionText} className="option-label">
+                            <input 
+                              type="checkbox" 
+                              name={`q-${q.questionNumber}`}
+                              value={optionText}
+                              checked={isChecked}
+                              onChange={(e) => handleCheckboxChange(q.questionNumber, optionText, e.target.checked)}
+                              disabled={submitted}
+                            />
+                            {optionText}
+                          </label>
+                        )
+                      })}
+                    </div>
+                  ) : test.passageContent?.includes(`[[${q.questionNumber}]]`) ? (
+                    <div style={{ padding: '12px', background: '#f8fafc', borderRadius: '6px', color: '#64748b', fontSize: '14px', border: '1px dashed #cbd5e1' }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: '16px', verticalAlign: 'middle', marginRight: '6px' }}>edit_note</span>
+                      <em>Answer this question inline in the passage above.</em>
+                    </div>
+                  ) : (
+                    <input 
+                      type="text" 
+                      className="fill-blank-input" 
+                      placeholder="Type answer..." 
+                      value={answers[q.questionNumber] || ''}
+                      onChange={(e) => handleAnswerChange(q.questionNumber, e.target.value)}
+                      disabled={submitted}
+                    />
                   )}
                 </div>
-              )}
-            </div>
-          ))}
-        </div>
+              </div>
+            ))}
+          </div>
+        )}
 
         {!submitted ? (
           <button className="submit-test-btn" onClick={handleSubmit}>Submit Test</button>
@@ -341,7 +359,40 @@ export default function InteractiveListeningTest({ params }: { params: any }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {test.questions?.map((q: any) => {
+                  {test.rawAnswerKey ? test.rawAnswerKey.split('\n').map((l: string) => l.trim()).filter(Boolean).map((line: string, index: number) => {
+                    const qNum = index + 1
+                    const userAns = (answers[qNum] || '').trim()
+                    const correctAns = line.replace(/^\d+[\.\)\-]?\s*/, '').trim()
+                    
+                    // Simple fuzzy matching (case insensitive, allow multiple select comma separation logic implicitly by splitting/sorting if it has commas)
+                    let isCorrect = false
+                    if (correctAns.includes(',')) {
+                      const userArr = userAns.toLowerCase().split(',').map((s: string) => s.trim()).filter(Boolean).sort()
+                      const correctArr = correctAns.toLowerCase().split(',').map((s: string) => s.trim()).filter(Boolean).sort()
+                      isCorrect = JSON.stringify(userArr) === JSON.stringify(correctArr)
+                    } else if (correctAns.includes('/')) {
+                      // Support answers like "Roof / Roofs"
+                      const possibleAnswers = correctAns.toLowerCase().split('/').map((s: string) => s.trim())
+                      isCorrect = possibleAnswers.includes(userAns.toLowerCase())
+                    } else {
+                      isCorrect = userAns.toLowerCase() === correctAns.toLowerCase()
+                    }
+
+                    return (
+                      <tr key={qNum} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                        <td style={{ padding: '12px', fontWeight: 'bold' }}>{qNum}</td>
+                        <td style={{ padding: '12px', color: userAns ? 'white' : '#64748b' }}>{userAns || '(no answer)'}</td>
+                        <td style={{ padding: '12px', color: '#a7f3d0' }}>{correctAns}</td>
+                        <td style={{ padding: '12px' }}>
+                          {isCorrect ? (
+                            <span style={{ display: 'inline-block', padding: '4px 8px', background: 'rgba(34, 197, 94, 0.2)', color: '#4ade80', borderRadius: '4px', fontSize: '0.85rem', fontWeight: 'bold' }}>✅ Correct</span>
+                          ) : (
+                            <span style={{ display: 'inline-block', padding: '4px 8px', background: 'rgba(239, 68, 68, 0.2)', color: '#f87171', borderRadius: '4px', fontSize: '0.85rem', fontWeight: 'bold' }}>❌ Incorrect</span>
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  }) : test.questions?.map((q: any) => {
                     const userAns = (answers[q.questionNumber] || '').trim()
                     const correctAns = (q.correctAnswer || '').trim()
                     let isCorrect = false
