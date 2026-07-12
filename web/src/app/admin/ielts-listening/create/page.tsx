@@ -62,6 +62,38 @@ export default function CreateIeltsListening() {
     }))
   }
 
+  const [bulkAnswers, setBulkAnswers] = useState('')
+
+  const applyBulkAnswers = () => {
+    const lines = bulkAnswers.split('\n').map(l => l.trim()).filter(Boolean);
+    if (lines.length === 0) return;
+    
+    setTestData(prev => {
+      const newQs = [...prev.questions];
+      lines.forEach((line, index) => {
+        // Strip leading numbers like "1. ", "1)", "01."
+        const answer = line.replace(/^\d+[\.\)\-]?\s*/, '').trim();
+        
+        if (newQs[index]) {
+          newQs[index].correctAnswer = answer;
+        } else {
+          newQs.push({
+            questionNumber: index + 1,
+            questionText: '',
+            questionType: 'Fill in the Blank',
+            options: '',
+            correctAnswer: answer,
+            explanation: '',
+            googleDriveImageContext: ''
+          });
+        }
+      });
+      return { ...prev, questions: newQs };
+    });
+    setBulkAnswers('');
+    alert(`Successfully imported ${lines.length} answers!`);
+  }
+
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault()
     let html = e.clipboardData.getData('text/html')
@@ -193,8 +225,26 @@ export default function CreateIeltsListening() {
 
         {/* Questions Array */}
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--admin-border)', paddingBottom: '12px', marginBottom: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '1px solid var(--admin-border)', paddingBottom: '12px', marginBottom: '24px' }}>
             <h2 style={{ fontSize: '18px', fontWeight: 'bold' }}>Questions</h2>
+            
+            <div style={{ background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1', width: '400px' }}>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 'bold', marginBottom: '6px', color: '#334155' }}>⚡ Bulk Import Answers (Paste 1-40)</label>
+              <textarea 
+                rows={3} 
+                placeholder="1. Apple&#10;2. Banana&#10;3. Car"
+                style={{ width: '100%', padding: '8px', fontSize: '13px', borderRadius: '4px', border: '1px solid #cbd5e1', marginBottom: '8px' }}
+                value={bulkAnswers}
+                onChange={e => setBulkAnswers(e.target.value)}
+              />
+              <button 
+                type="button" 
+                onClick={applyBulkAnswers}
+                style={{ background: '#10b981', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold', width: '100%' }}
+              >
+                Auto-Fill Correct Answers
+              </button>
+            </div>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
