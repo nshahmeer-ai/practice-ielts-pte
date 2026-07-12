@@ -13,7 +13,9 @@ export default async function IELTSReadingPage({ searchParams }: Props) {
   const track = resolvedParams?.track || 'Academic'
   
   const tests = await client.fetch(
-    `*[_type == "ieltsReading" && examTrack == $track] | order(_createdAt asc)`,
+    `*[_type == "ieltsReading" && examTrack == $track] | order(_createdAt asc) {
+      _id, title, slug, duration, passages
+    }`,
     { track }
   )
 
@@ -79,7 +81,7 @@ export default async function IELTSReadingPage({ searchParams }: Props) {
               </div>
             )}
             {tests.map((test: any, index: number) => (
-              <a href={`/ielts/reading/${test._id}`} key={test._id} className="test-card">
+              <a href={`/ielts/reading/${test.slug?.current || test._id}`} key={test._id} className="test-card">
                 <div className="test-card__left">
                   <div className="test-card__num">{index + 1}</div>
                   <div className="test-card__info">

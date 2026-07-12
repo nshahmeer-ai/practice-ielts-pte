@@ -30,7 +30,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <span className="material-symbols-outlined">headphones</span>
               IELTS Listening
             </a>
-            <a href="/studio/structure/ieltsReading" className="admin-nav-item" target="_blank" rel="noopener noreferrer">
+            <a href="/admin/ielts-reading" className="admin-nav-item">
               <span className="material-symbols-outlined">menu_book</span>
               IELTS Reading
             </a>

@@ -175,8 +175,8 @@ const ReadingController = {
       <div class="q-options" id="q-opts-${q.num}" data-qnum="${q.num}" data-answer="${q.answer}">
         ${(q.options || []).map((opt, i) => `
           <div class="q-option" data-value="${letters[i]}">
-            <span class="q-option-letter">${letters[i]}</span>
-            ${opt.replace(/^\s*[A-H][\.\)\-]?\s+/i, '')}
+            <span class="q-option-letter" style="flex-shrink: 0; margin-top: 2px;">${letters[i]}</span>
+            <span style="flex: 1; word-break: break-word; line-height: 1.5;">${opt.replace(/^\s*[A-H][\.\)\-]?\s+/i, '')}</span>
           </div>`).join('')}
       </div>
     </div>`;
