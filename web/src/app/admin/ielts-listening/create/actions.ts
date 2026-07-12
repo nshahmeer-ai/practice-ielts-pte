@@ -24,7 +24,6 @@ export async function createListeningTest(data: any) {
         _type: 'slug',
         current: data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
       },
-      duration: data.duration,
       passageContent: data.passageContent,
       transcript: data.transcript,
       googleDriveAudioUrl: data.googleDriveAudioUrl,
@@ -57,7 +56,6 @@ export async function updateListeningTest(id: string, data: any) {
         _type: 'slug',
         current: data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
       },
-      duration: data.duration,
       passageContent: data.passageContent,
       transcript: data.transcript,
       googleDriveAudioUrl: data.googleDriveAudioUrl,

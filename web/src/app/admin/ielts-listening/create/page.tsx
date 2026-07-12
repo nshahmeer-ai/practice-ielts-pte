@@ -13,7 +13,6 @@ export default function CreateIeltsListening() {
   
   const [testData, setTestData] = useState({
     title: '',
-    duration: 30,
     passageContent: '',
     googleDriveAudioUrl: '',
     rawAnswerKey: ''
@@ -104,18 +103,6 @@ export default function CreateIeltsListening() {
                 style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '16px' }}
                 value={testData.googleDriveAudioUrl}
                 onChange={e => setTestData({...testData, googleDriveAudioUrl: e.target.value})}
-              />
-            </div>
-            
-            <div>
-              <label style={{ display: 'block', fontWeight: '600', marginBottom: '8px', color: '#334155' }}>Duration (minutes)</label>
-              <input 
-                type="number" 
-                required 
-                min="1"
-                style={{ width: '200px', padding: '12px 16px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '16px' }}
-                value={testData.duration}
-                onChange={e => setTestData({...testData, duration: parseInt(e.target.value)})}
               />
             </div>
           </div>
